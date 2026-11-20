@@ -953,3 +953,10 @@ References: [SDK 57 Accelerometer](https://docs.expo.dev/versions/v57.0.0/sdk/ac
 React Native on Android picks a custom font by its exact family name and ignores `fontWeight` for it, and it can't set a variable font's `wght` axis. So the glow design's Funnel Display and Funnel Sans (variable TTFs, 300 to 800) ship as static instances, one file and one family name per weight (`assets/fonts`, cut with fontTools' `varLib.instancer`, which the SIL OFL allows), loaded with `useFonts` from `src/glow/fonts.ts`. The same files feed Skia's typefaces in the chart explorer.
 
 References: [SDK 57 Font](https://docs.expo.dev/versions/v57.0.0/sdk/font/), [fontTools instancer](https://fonttools.readthedocs.io/en/latest/varLib/instancer.html).
+
+## An adaptive icon with a picture behind it
+
+`android.adaptiveIcon` takes a `backgroundImage` as well as a `backgroundColor`. Pulse Glow's glow ground is a
+picture, so it is the background layer and the dots are the foreground: launchers mask and move the two separately, and
+the monochrome layer (Android 13 themed icons) is the dots alone. Both layers are 1024 px, of which a launcher shows
+the middle two thirds, so the mark is drawn at 2/3 of its size on the full icon.

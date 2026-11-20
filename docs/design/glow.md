@@ -36,6 +36,16 @@ flowchart LR
 - The full pages (`/recovery`, `/sleep`, `/strain`, the Health pages, Journal, More) are the upstream screens in the new
   type and blacks. Restyling them card by card is the next step.
 
+## The mark
+
+The app icon, the splash and the opening draw one heartbeat in the dot font's dots: 13 columns by 9 rows, white, the
+cells in `src/glow/mark.ts`. The icon sets it on a glow card in the Energy ink (`#F66C28`), lit from below with a dark
+pool behind the mark, the look of Today's hero; the splash and the opening set it on black, and the opening beats it
+once with a warm glow behind. `scripts/brand/glow-icon.py` writes every PNG from `mark.ts` (`python3
+scripts/brand/glow-icon.py`, needs numpy and Pillow): `icon.png`, the adaptive icon's background, foreground and
+monochrome layers (the mark sized for the 2/3 a launcher shows), `icon-tinted.png`, `splash-icon.png` and the favicon.
+The old two-bar mark stays only where it is drawn small in the app (`src/ui/brand.tsx`) and in onboarding.
+
 ## Not done yet
 
 - Detail pages in the glow tiers (spec 6), the info sheets, Edit Today.
