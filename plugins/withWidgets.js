@@ -2,6 +2,7 @@
 const { withAndroidManifest } = require("expo/config-plugins");
 const BASE = "app.pulse.widgets";
 const PROVIDERS = ["Small", "Medium", "Large"];
+const GLOW = ["Today", "Recovery", "Sleep", "Steps"];
 
 function addWidgetDeclarations(manifest) {
   const app = manifest.manifest?.application?.[0];
@@ -13,6 +14,17 @@ function addWidgetDeclarations(manifest) {
       $: { "android:name": name, "android:exported": "false", "android:label": `@string/pulse_widget_${size.toLowerCase()}` },
       "intent-filter": [{ action: [{ $: { "android:name": "android.appwidget.action.APPWIDGET_UPDATE" } }] }],
       "meta-data": [{ $: { "android:name": "android.appwidget.provider", "android:resource": `@xml/pulse_widget_${size.toLowerCase()}_info` } }],
+    };
+    const index = app.receiver.findIndex((r) => r.$["android:name"] === name);
+    if (index < 0) app.receiver.push(entry); else app.receiver[index] = entry;
+  }
+  // The glow widgets (GlowWidgets.kt): no configuration, each draws one card.
+  for (const kind of GLOW) {
+    const name = `${BASE}.Glow${kind}WidgetProvider`;
+    const entry = {
+      $: { "android:name": name, "android:exported": "false", "android:label": `@string/glow_widget_${kind.toLowerCase()}` },
+      "intent-filter": [{ action: [{ $: { "android:name": "android.appwidget.action.APPWIDGET_UPDATE" } }] }],
+      "meta-data": [{ $: { "android:name": "android.appwidget.provider", "android:resource": `@xml/glow_widget_${kind.toLowerCase()}_info` } }],
     };
     const index = app.receiver.findIndex((r) => r.$["android:name"] === name);
     if (index < 0) app.receiver.push(entry); else app.receiver[index] = entry;

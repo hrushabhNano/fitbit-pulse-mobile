@@ -7,6 +7,7 @@ import { getHome } from "@/queries/home";
 import { reportError } from "@/lib/telemetry";
 import { SOURCE_KEY } from "@/state/source";
 import { buildWidgetSnapshot } from "./model";
+import { glowWidgetData } from "@/glow/widgetData";
 
 let generation = 0;
 let queue: Promise<void> = Promise.resolve();
@@ -23,7 +24,10 @@ export function refreshWidgets(ctx: QueryCtx, source: "health_connect" | "demo",
     if ((await AsyncStorage.getItem(SOURCE_KEY)) !== source || !(await ctx.store.getProfile())) return;
     const [home, reading] = await Promise.all([getHome(ctx.today, ctx), storedRecentHeartRate(ctx.store).catch(() => undefined)]);
     if (mine !== generation) return;
-    const snapshot = buildWidgetSnapshot(home, { timeZone: ctx.timeZone, generatedAt: ctx.now, lastSyncTs: ctx.sync.lastSyncTs, source }, reading);
+    // The glow widgets' part rides along; without it they show their waiting state, and the classic widgets are untouched.
+    const glow = await glowWidgetData(ctx, home).catch(() => null);
+    if (mine !== generation) return;
+    const snapshot = { ...buildWidgetSnapshot(home, { timeZone: ctx.timeZone, generatedAt: ctx.now, lastSyncTs: ctx.sync.lastSyncTs, source }, reading), ...(glow && { glow }) };
     if ((await AsyncStorage.getItem(SOURCE_KEY)) !== source) return;
     await publishSnapshot(JSON.stringify(snapshot), epoch);
   }).catch((e: unknown) => {

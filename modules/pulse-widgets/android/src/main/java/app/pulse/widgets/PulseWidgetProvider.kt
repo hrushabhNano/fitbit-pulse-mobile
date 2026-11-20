@@ -37,6 +37,7 @@ internal fun updateAllWidgets(context: Context) {
   listOf(PulseSmallWidgetProvider::class.java, PulseMediumWidgetProvider::class.java, PulseLargeWidgetProvider::class.java).forEach { provider ->
     manager.getAppWidgetIds(ComponentName(context, provider)).forEach { renderWidget(context, manager, it) }
   }
+  updateGlowWidgets(context)
 }
 private val CELLS = arrayOf(
   intArrayOf(R.id.widget_cell_1, R.id.widget_art_1), intArrayOf(R.id.widget_cell_2, R.id.widget_art_2),

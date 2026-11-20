@@ -13,7 +13,7 @@ class PulseWidgetsModule : Module() {
     Function("hasWidgets") {
       val ctx = context()
       val manager = AppWidgetManager.getInstance(ctx)
-      listOf(PulseSmallWidgetProvider::class.java, PulseMediumWidgetProvider::class.java, PulseLargeWidgetProvider::class.java).any { manager.getAppWidgetIds(ComponentName(ctx, it)).isNotEmpty() }
+      listOf(PulseSmallWidgetProvider::class.java, PulseMediumWidgetProvider::class.java, PulseLargeWidgetProvider::class.java).any { manager.getAppWidgetIds(ComponentName(ctx, it)).isNotEmpty() } || hasGlowWidgets(ctx)
     }
     AsyncFunction("epoch") { WidgetCache.epoch(context()) }
     AsyncFunction("publish") { snapshot: String, epoch: Double ->

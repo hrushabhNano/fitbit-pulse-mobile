@@ -17,7 +17,7 @@ describe("widget native configuration", () => {
     expect(JSON.stringify(manifest)).toBe(once);
     expect(manifest.manifest.application[0].receiver[0]).toEqual(receiver);
     expect(manifest.manifest.application[0].activity[0]).toEqual(activity);
-    expect(manifest.manifest.application[0].receiver).toHaveLength(4);
+    expect(manifest.manifest.application[0].receiver).toHaveLength(8);
     expect(manifest.manifest.application[0].activity).toHaveLength(2);
     expect(manifest.manifest.application[0].activity[1].$).toMatchObject({
       "android:taskAffinity": "", "android:excludeFromRecents": "true", "android:theme": "@style/PulseWidgetConfigure",

@@ -1,0 +1,201 @@
+{
+ "version": 1,
+ "day": "2026-10-02",
+ "timeZone": "Asia/Kolkata",
+ "generatedAt": 1790906400,
+ "lastSyncTs": 1790906340,
+ "source": "health_connect",
+ "metrics": [
+  {
+   "key": "recovery",
+   "label": "Recovery",
+   "value": 93.4,
+   "display": "93",
+   "unit": "%",
+   "reason": null,
+   "provisional": false,
+   "href": "pulse://recovery",
+   "color": "#12c805",
+   "progress": 93.4
+  },
+  {
+   "key": "strain",
+   "label": "Strain",
+   "value": 24.51,
+   "display": "25",
+   "unit": "%",
+   "reason": null,
+   "provisional": false,
+   "href": "pulse://strain",
+   "color": "#0093e7",
+   "progress": 24.51
+  },
+  {
+   "key": "sleep",
+   "label": "Sleep",
+   "value": 86.4,
+   "display": "86",
+   "unit": "%",
+   "reason": null,
+   "provisional": false,
+   "href": "pulse://sleep",
+   "color": "#6690ad",
+   "progress": 86.4
+  },
+  {
+   "key": "steps",
+   "label": "Steps",
+   "value": 4647,
+   "display": "4,647",
+   "unit": "",
+   "reason": null,
+   "provisional": false,
+   "href": "pulse://metric/steps",
+   "color": "#00b377",
+   "progress": null
+  },
+  {
+   "key": "calories",
+   "label": "Calories",
+   "value": 1178,
+   "display": "1,178",
+   "unit": "kcal",
+   "reason": null,
+   "provisional": false,
+   "href": "pulse://metric/calories",
+   "color": "#d97900",
+   "progress": null
+  },
+  {
+   "key": "hrv",
+   "label": "HRV",
+   "value": 62.3,
+   "display": "62.3",
+   "unit": "ms",
+   "reason": null,
+   "provisional": false,
+   "href": "pulse://metric/hrv",
+   "color": "#12c805",
+   "progress": null
+  },
+  {
+   "key": "rhr",
+   "label": "Resting HR",
+   "value": 56,
+   "display": "56",
+   "unit": "bpm",
+   "reason": null,
+   "provisional": false,
+   "href": "pulse://metric/rhr",
+   "color": "#3f92d3",
+   "progress": null
+  },
+  {
+   "key": "stress",
+   "label": "Stress",
+   "value": 41,
+   "display": "41",
+   "unit": "",
+   "reason": null,
+   "provisional": false,
+   "href": "pulse://health/stress",
+   "color": "#d97900",
+   "progress": null
+  },
+  {
+   "key": "heart_rate",
+   "label": "Heart rate",
+   "value": null,
+   "display": "--",
+   "unit": "bpm",
+   "reason": "--",
+   "provisional": false,
+   "href": "pulse://health/heart-rate",
+   "color": "#f20024",
+   "progress": null,
+   "observedAt": null,
+   "trend": []
+  }
+ ],
+ "labels": {
+  "reading": "Reading",
+  "oldReading": "Older reading",
+  "noReading": "No heart-rate reading",
+  "heartWindow": "30 min before reading",
+  "demo": "Sample data",
+  "updated": "Synced",
+  "stale": "Older sync · open Pulse",
+  "open": "Open Pulse and sync to see your data",
+  "today": "Open Pulse for today's data"
+ },
+ "glow": {
+  "moment": "waking",
+  "hero": {
+   "angle": 225,
+   "rim": 1,
+   "mood": "day",
+   "title": "Waking up",
+   "ink": "#7CF2C9",
+   "sentence": "Slept 7 hours 13 minutes. Recovered and ready for your usual training. Mostly lifted by heart rate variability.",
+   "value": "93",
+   "unit": "Ready",
+   "href": "pulse://tab-recovery"
+  },
+  "recovery": {
+   "title": "Recovery",
+   "score": "93",
+   "word": "Ready",
+   "note": "+40 vs yesterday",
+   "sentence": "Slept 7 hours 13 minutes. Recovered and ready for your usual training. Mostly lifted by heart rate variability.",
+   "week": [
+    61,
+    50,
+    62,
+    77,
+    97,
+    53,
+    93
+   ],
+   "waiting": null,
+   "href": "pulse://tab-recovery"
+  },
+  "sleep": {
+   "title": "Last night",
+   "score": "86",
+   "word": "Sleep score",
+   "asleep": "7 hours 13 minutes asleep",
+   "stages": {
+    "deep": 93,
+    "rem": 86,
+    "light": 254,
+    "awake": 22
+   },
+   "waiting": null,
+   "href": "pulse://tab-sleep"
+  },
+  "steps": {
+   "title": "Steps",
+   "value": "4,647",
+   "goal": "10,000",
+   "share": 0.4647,
+   "met": false,
+   "word": "46% of your goal",
+   "week": [
+    0.5098,
+    0.8609,
+    0.88,
+    1,
+    0.8928,
+    1,
+    0.4647
+   ],
+   "href": "pulse://tab-activity"
+  },
+  "energy": {
+   "title": "Energy",
+   "value": "52",
+   "level": 0.517,
+   "word": "79 at waking"
+  }
+ }
+}

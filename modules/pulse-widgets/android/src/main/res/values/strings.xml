@@ -30,4 +30,15 @@
   <string name="pulse_widget_metric_rhr">Resting HR</string>
   <string name="pulse_widget_metric_stress">Stress</string>
   <string name="pulse_widget_metric_heart_rate">Heart rate</string>
+  <string name="glow_widget_today">Pulse Glow · Today</string>
+  <string name="glow_widget_recovery">Pulse Glow · Recovery</string>
+  <string name="glow_widget_sleep">Pulse Glow · Sleep</string>
+  <string name="glow_widget_steps">Pulse Glow · Steps</string>
+  <string name="glow_widget_description">The part of your day that matters now, in the Pulse Glow look.</string>
+  <string name="glow_widget_open">Open Pulse Glow and sync</string>
+  <string name="glow_widget_today_title">Today</string>
+  <string name="glow_widget_stage_deep">Deep</string>
+  <string name="glow_widget_stage_rem">REM</string>
+  <string name="glow_widget_stage_light">Light</string>
+  <string name="glow_widget_stage_awake">Awake</string>
 </resources>

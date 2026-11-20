@@ -1,5 +1,6 @@
 // Native launcher/configuration copy is generated from the same i18n source as React. Tests prevent drift.
 const copy = require("../src/i18n/locales/en/widgets.json");
+const glow = require("../src/i18n/locales/en/glow.json");
 const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "\\'").replace(/"/g, '\\"');
 function widgetStrings() {
   const values = {
@@ -9,6 +10,10 @@ function widgetStrings() {
     pulse_widget_small: copy.sizes.small, pulse_widget_medium: copy.sizes.medium, pulse_widget_large: copy.sizes.large,
     ...Object.fromEntries(Object.entries(copy.state).map(([k, v]) => [`pulse_widget_${k}`, v])),
     ...Object.fromEntries(Object.entries(copy.labels).map(([key, value]) => [`pulse_widget_metric_${key}`, value])),
+    // The glow widgets (GlowWidgets.kt), from the glow namespace.
+    glow_widget_today: glow.widget.today, glow_widget_recovery: glow.widget.recovery, glow_widget_sleep: glow.widget.sleep, glow_widget_steps: glow.widget.steps,
+    glow_widget_description: glow.widget.description, glow_widget_open: glow.widget.open, glow_widget_today_title: glow.tabs.today,
+    ...Object.fromEntries(Object.entries(glow.stage).map(([key, value]) => [`glow_widget_stage_${key}`, value])),
   };
   return `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n${Object.entries(values).map(([k, v]) => `  <string name="${k}">${esc(v)}</string>`).join("\n")}\n</resources>\n`;
 }

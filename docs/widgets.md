@@ -102,3 +102,18 @@ Rendered by `WidgetRenderingTest` from demo data (`./gradlew :pulse-widgets:test
 | Small | ![Small, light](images/widgets/small-light.png) | ![Small, dark](images/widgets/small-dark.png) |
 | Medium | ![Medium, light](images/widgets/medium-light.png) | ![Medium, dark](images/widgets/medium-dark.png) |
 | Large | ![Large, light](images/widgets/large-light.png) | ![Large, dark](images/widgets/large-dark.png) |
+
+## Glow widgets (this fork)
+
+Four more providers in the glow look of the app (docs/design/glow.md), after unstrap's widget set: **Today** (the hero
+of the moment: waking, midday, workout time, evening, night), **Recovery** (score in dots, its word, the last 7 days),
+**Sleep** (score, time asleep, the stage bar and, large, the legend) and **Steps** (count in dots against the goal, the
+week's rings when large). Each resizes freely and lays itself out as a Small (under 230 dp wide), a Wide or a Large.
+They take no configuration and open their tab.
+
+- Data: `src/glow/widget.ts` builds a `glow` part of the same snapshot from the tabs' own queries (Recovery, Sleep,
+  goals, activities for the moment); `publish.ts` adds it next to Home. Without it they show the waiting card.
+- Drawing: `GlowDraw.kt` (the light, the dot font) and `GlowWidgets.kt` draw one bitmap per widget in Funnel type
+  (`res/font/funnel_*`). Always dark, as the app is.
+- `GlowWidgetTest` draws every widget at every size from demo snapshots (`src/test/resources/glow-snapshot-*.json`,
+  written from the demo seed); the APK workflow keeps the PNGs as the `glow-widget-previews` artifact.

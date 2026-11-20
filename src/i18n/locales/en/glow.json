@@ -59,7 +59,8 @@
     "nightLine": "Time to wind down.",
     "pastLine": "How the day began.",
     "asleep": "{{time}} asleep.",
-    "bedToWake": "{{bed}} to {{wake}}"
+    "bedToWake": "{{bed}} to {{wake}}",
+    "afterShort": "After your workout. Heart rate settling."
   },
   "card": {
     "recovery": "Recovery",
@@ -151,5 +152,13 @@
     "journalNote": "Check-ins and what affects you",
     "more": "Settings and more",
     "moreNote": "Profile, goals, data, coach"
+  },
+  "widget": {
+    "today": "Pulse Glow · Today",
+    "recovery": "Pulse Glow · Recovery",
+    "sleep": "Pulse Glow · Sleep",
+    "steps": "Pulse Glow · Steps",
+    "description": "The part of your day that matters now, in the Pulse Glow look.",
+    "open": "Open Pulse Glow and sync"
   }
 }

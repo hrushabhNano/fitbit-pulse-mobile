@@ -63,6 +63,27 @@ jobs:
           NDK_CCACHE: ccache
           CMAKE_C_COMPILER_LAUNCHER: ccache
           CMAKE_CXX_COMPILER_LAUNCHER: ccache
+      # The glow widgets drawn on the JVM (Robolectric, real Android graphics) from demo snapshots; the PNGs are kept as
+      # an artifact so the drawing can be checked without a phone. A failure here doesn't hold back the APK.
+      - name: Draw the glow widgets
+        id: widgets
+        continue-on-error: true
+        run: |
+          ./gradlew :pulse-widgets:testDebugUnitTest --tests "app.pulse.widgets.GlowWidgetTest" --console=plain \
+            "-Dorg.gradle.jvmargs=-Xmx6g -XX:MaxMetaspaceSize=2g -Dfile.encoding=UTF-8"
+        working-directory: android
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: glow-widget-previews
+          path: modules/pulse-widgets/android/build/widget-previews/
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v4
+        if: steps.widgets.outcome == 'failure'
+        with:
+          name: glow-widget-test-report
+          path: modules/pulse-widgets/android/build/reports/tests/
+          if-no-files-found: ignore
       - name: Name it
         id: name
         run: |

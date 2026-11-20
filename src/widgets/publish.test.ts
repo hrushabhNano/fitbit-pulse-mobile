@@ -9,6 +9,7 @@ vi.mock("@react-native-async-storage/async-storage", () => ({ default: { getItem
 vi.mock("@/health/live", () => ({ storedRecentHeartRate: async () => ({ latest: null, samples: [] }) }));
 vi.mock("@/queries/home", () => ({ getHome: mocks.home }));
 vi.mock("./model", () => ({ buildWidgetSnapshot: mocks.build }));
+vi.mock("@/glow/widgetData", () => ({ glowWidgetData: async () => null }));
 const ctx = { store: { getProfile: async () => ({}) }, today: "2026-10-29", now: 1793260800, timeZone: "UTC", sync: { lastSyncTs: null } } as unknown as QueryCtx;
 
 beforeEach(async () => {
