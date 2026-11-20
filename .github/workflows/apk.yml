@@ -48,18 +48,14 @@ jobs:
       - run: npx expo prebuild --platform android --no-install
         env:
           CI: 1
-      # The Gradle daemon's own memory (gradle.properties, not GRADLE_OPTS): the template's 512 MB of metaspace runs out on
-      # this many native modules, and the daemon then hangs rather than failing.
-      - run: |
-          sed -i '/^org.gradle.jvmargs=/d' gradle.properties
-          echo 'org.gradle.jvmargs=-Xmx6g -XX:MaxMetaspaceSize=2g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8' >> gradle.properties
-          echo 'kotlin.daemon.jvmargs=-Xmx2g' >> gradle.properties
-        working-directory: android
       # Each build a higher version code, so Android always takes it as an update.
       - run: sed -i -E "s/versionCode [0-9]+/versionCode ${{ github.run_number }}/" app/build.gradle
         working-directory: android
+      # The daemon's memory goes on the command line: the template's default (512 MB heap) thrashes on this many
+      # native modules, and a line appended to gradle.properties can land on its last line.
       - name: Build the release APK (arm64)
-        run: ./gradlew assembleRelease --console=plain --build-cache --parallel -PreactNativeArchitectures=arm64-v8a
+        run: ./gradlew assembleRelease --console=plain --build-cache --parallel -PreactNativeArchitectures=arm64-v8a \
+          "-Dorg.gradle.jvmargs=-Xmx6g -XX:MaxMetaspaceSize=2g -Dfile.encoding=UTF-8" "-Dkotlin.daemon.jvmargs=-Xmx2g"
         working-directory: android
         env:
           USE_CCACHE: 1
