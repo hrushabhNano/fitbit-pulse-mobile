@@ -192,28 +192,28 @@
 }
 
 .dark:root {
-  --background-top: 29 37 41;
-  --background-mid: 21 27 31;
-  --background: 16 21 24;
+  --background-top: 0 0 0;
+  --background-mid: 0 0 0;
+  --background: 0 0 0;
   --foreground: 255 255 255;
   --foreground-secondary: 186 186 192;
-  --card: 35 38 41;
-  --card-top: 39 42 45;
-  --card-hover: 44 48 51;
+  --card: 15 15 17;
+  --card-top: 20 20 22;
+  --card-hover: 26 26 29;
   --card-foreground: 255 255 255;
-  --popover: 37 44 50;
-  --popover-top: 42 55 63;
+  --popover: 20 20 22;
+  --popover-top: 31 31 34;
   --popover-foreground: 255 255 255;
   --primary: 255 255 255;
   --primary-foreground: 16 21 24;
-  --secondary: 59 66 68;
+  --secondary: 31 31 34;
   --secondary-foreground: 255 255 255;
-  --muted: 34 40 44;
+  --muted: 20 20 22;
   --muted-foreground: 169 174 179;
-  --accent: 65 72 75;
+  --accent: 38 38 42;
   --accent-foreground: 255 255 255;
-  --inset: 17 22 25;
-  --field: 50 57 62;
+  --inset: 10 10 11;
+  --field: 31 31 34;
   --destructive: 255 0 38;
   --border: rgb(255 255 255 / 0.1);
   --input: rgb(255 255 255 / 0.15);
@@ -309,9 +309,9 @@
   --chart-highlight: rgb(255 255 255 / 0.07);
   --chart-faint: rgb(103 174 230 / 0.3);
   --strain-band-1: 0 147 231;
-  --strain-band-2: 8 123 189;
-  --strain-band-3: 15 101 151;
-  --strain-band-4: 21 82 117;
+  --strain-band-2: 3 118 184;
+  --strain-band-3: 6 92 141;
+  --strain-band-4: 9 68 103;
   --ground-healthspan: 16 21 24;
   --pattern-hatch: rgb(255 255 255 / 0.09);
   --selection: rgb(255 255 255 / 0.25);
@@ -323,7 +323,7 @@
   --fill-pressed: rgb(255 255 255 / 0.1);
   --skeleton: rgb(255 255 255 / 0.06);
   --foreground-body: rgb(255 255 255 / 0.85);
-  --card-peek: rgb(35 38 41 / 0.6);
+  --card-peek: rgb(15 15 17 / 0.6);
   --focus-ring: rgb(255 255 255 / 0.7);
   --input-fill: rgb(255 255 255 / 0.045);
   --alert-ring: rgb(255 0 38 / 0.6);

@@ -7,10 +7,11 @@ export type Family = "sans" | "numeric";
 export type Weight = "regular" | "medium" | "semibold" | "bold";
 export type Face = { family: Family; weight: Weight };
 
+// The glow design's faces (src/glow/fonts.ts): Funnel Sans for text, Funnel Display for numerals. Funnel Display stops
+// at SemiBold here, so its bold is the SemiBold face.
 export const FACES: Record<Family, Record<Weight, string>> = {
-  sans: { regular: "Figtree_400Regular", medium: "Figtree_500Medium", semibold: "Figtree_600SemiBold", bold: "Figtree_700Bold" },
-  // Barlow is loaded from 500 up (as on the web), so its "regular" is the medium face.
-  numeric: { regular: "Barlow_500Medium", medium: "Barlow_500Medium", semibold: "Barlow_600SemiBold", bold: "Barlow_700Bold" },
+  sans: { regular: "FunnelSans-Regular", medium: "FunnelSans-Medium", semibold: "FunnelSans-SemiBold", bold: "FunnelSans-Bold" },
+  numeric: { regular: "FunnelDisplay-Medium", medium: "FunnelDisplay-Medium", semibold: "FunnelDisplay-SemiBold", bold: "FunnelDisplay-SemiBold" },
 };
 const WEIGHT_CLASS: Record<string, Weight> = { "font-normal": "regular", "font-medium": "medium", "font-semibold": "semibold", "font-bold": "bold" };
 const FAMILY_CLASS: Record<string, Family> = { "font-sans": "sans", "font-numeric": "numeric" };

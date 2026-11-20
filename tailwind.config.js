@@ -57,14 +57,14 @@ module.exports = {
       // React Native picks a font by its exact family name, not by family plus weight, so each weight is its own
       // name. <Text> in src/ui/Text.tsx maps the web's font-sans / font-numeric / font-bold classes onto these.
       fontFamily: {
-        sans: ["Figtree_400Regular"],
-        "sans-medium": ["Figtree_500Medium"],
-        "sans-semibold": ["Figtree_600SemiBold"],
-        "sans-bold": ["Figtree_700Bold"],
-        numeric: ["Barlow_500Medium"],
-        "numeric-medium": ["Barlow_500Medium"],
-        "numeric-semibold": ["Barlow_600SemiBold"],
-        "numeric-bold": ["Barlow_700Bold"],
+        sans: ["FunnelSans-Regular"],
+        "sans-medium": ["FunnelSans-Medium"],
+        "sans-semibold": ["FunnelSans-SemiBold"],
+        "sans-bold": ["FunnelSans-Bold"],
+        numeric: ["FunnelDisplay-Medium"],
+        "numeric-medium": ["FunnelDisplay-Medium"],
+        "numeric-semibold": ["FunnelDisplay-SemiBold"],
+        "numeric-bold": ["FunnelDisplay-SemiBold"],
       },
     },
   },

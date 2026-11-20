@@ -9,6 +9,11 @@ import { Ground, groundColorAt, HealthspanGround } from "../Ground";
 import { Text } from "../Text";
 import { useTheme } from "../theme";
 import { DateSwitcher, type DateSwitcherProps } from "./DateSwitcher";
+import { router } from "expo-router";
+import { ChevronLeft } from "lucide-react-native";
+import { i18n } from "@/i18n/config";
+import { Icon } from "../Icon";
+import { Press } from "../Press";
 
 // The pieces every header shares (spec §4.3, §4.4): the ground fill, the 24 px fade, the three-slot row.
 
@@ -88,9 +93,15 @@ export function HeaderRow({ left, center, right, className, tall }: { left?: Rea
 
 /** Health, Journal and More (spec §4.3 "Other tab roots"): centred title, optional right slot (sync status), optional date pill under it. */
 export function TitleHeader({ title, dateSwitcher, right }: { title: string; dateSwitcher?: DateSwitcherProps; right?: ReactNode }) {
+  // Health, Journal and More open from You over the glow tabs (src/glow), so they carry a way back.
+  const back = router.canGoBack() ? (
+    <Press activeBg="bg-fill-hover" accessibilityRole="button" accessibilityLabel={i18n.t("common:actions.back")} onPress={() => router.back()} className="size-11 items-center justify-center rounded-full">
+      <Icon icon={ChevronLeft} size={26} tone="foreground" strokeWidth={1.75} />
+    </Press>
+  ) : undefined;
   return (
     <HeaderFrame rows={HEADER_ROW + (dateSwitcher ? 40 : 0)}>
-      <HeaderRow center={<Text accessibilityRole="header" className={cn(HEADER_TITLE, "px-2")} numberOfLines={1}>{title}</Text>} right={right} className="px-4" />
+      <HeaderRow left={back} center={<Text accessibilityRole="header" className={cn(HEADER_TITLE, "px-2")} numberOfLines={1}>{title}</Text>} right={right} className="px-4" />
       {dateSwitcher && (
         <View className="items-center pt-1">
           <DateSwitcher {...dateSwitcher} />

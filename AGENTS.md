@@ -2,7 +2,7 @@
 
 Guide for coding agents (and humans) working on Pulse Mobile: an Android app (Expo) where every byte lives on the phone. It reads the owner's Fitbit data from **Health Connect**, keeps it in SQLite, and turns it into recovery, strain, sleep, Pulse Age, stress, Energy Bank and journal insights. There is no server, no account and no Google sign-in: one install is one person. The one exception to "nothing leaves the phone" is error telemetry: coded error reports to Sentry with no health data, on by default and off in Settings (`docs/telemetry.md`).
 
-The engine (Health Connect source, storage, scoring, view models) comes from **halo**, a fork of the same pulse app, at `~/personal/halo`. halo is the reference for engine code: read it beside every change to `src/health`, `src/data`, `src/core`, `src/pipeline` and `src/queries`, and do things the way it does. The UI is Pulse's own and keeps the look of the pulse PWA. The move and its phases are in `docs/rewrite-plan.md`.
+The engine (Health Connect source, storage, scoring, view models) comes from **halo**, a fork of the same pulse app, at `~/personal/halo`. halo is the reference for engine code: read it beside every change to `src/health`, `src/data`, `src/core`, `src/pipeline` and `src/queries`, and do things the way it does. The UI of this fork is the glow design ported from unstrap (`docs/design/glow.md`). The move to Health Connect and its phases are in `docs/rewrite-plan.md`.
 
 ## Expo has changed: do not trust your training data
 
@@ -68,7 +68,7 @@ docs/         rewrite-plan.md, plan.md, design/spec.md, learning.md, onboarding.
 - **Causality.** A day's scores depend only on that day and earlier days. Baselines fold from earlier nights only. Never let a later night change history.
 - **Scoring version.** A change to what the pipeline stores bumps `SCORING_VERSION` (`src/pipeline/types.ts`), which rescores the history. A change to the import mapping bumps `IMPORT_VERSION` (`src/health/sync.ts`), which re-imports the history window.
 - **Long loops yield.** The import and the pipeline await `slice()` (`src/lib/yield.ts`) in long loops so taps and frames get through.
-- **UI.** The look is the pulse PWA's. Build from the shells and kit in `src/ui`, using NativeWind classes and the tokens. Spec decisions and deviations live in `docs/design/spec.md`. A screen that needs a changed view-model field adapts its code, not its look.
+- **UI.** This fork follows the glow design ported from unstrap (`docs/design/glow.md`): the tab roots are built from `src/glow` (tokens, dot-matrix numbers, glow and picture cards, moments), always dark, in Funnel Display and Funnel Sans. Older pages still use the shells and kit in `src/ui` until they are restyled. `src/glow` is UI only and reads the view models unchanged. A screen that needs a changed view-model field adapts its code, not its look.
 - **Copy.** User-facing text goes through i18n keys (docs/i18n.md); no literal copy in components. It says Pulse, Pulse Age and Health Connect. Where the reference study and WHOOP (noop, `~/personal/noop`) name the same feature differently, the screens use WHOOP's name: Sleep Performance (the study's Sleep Score), Sleep Debt (Sleep Bank), Sleep Need (Sleep Needed), Strain Target (Target Strain), Training Load (Cardio Load), Stress Monitor (Stress). Biological Age is Pulse Age; Energy Bank keeps its name (WHOOP has none).
 - **Shared files.** The `Store` interface, the UI tokens and the kit's exports change only in the orchestrating session, between waves. A stream that needs a change asks for it in its report.
 - **No native edits.** `android/` is generated (Continuous Native Generation) and git-ignored. Never create or edit it by hand. Configure native behavior in `app.json` and config plugins.
@@ -78,7 +78,7 @@ docs/         rewrite-plan.md, plan.md, design/spec.md, learning.md, onboarding.
 ## Git
 
 - Use the `git` CLI only, never `gh`.
-- Commit as `adityaongit`, email `74150665+adityaongit@users.noreply.github.com`. Check `git config user.email` before committing.
+- This is a fork: commit as its owner (`git config user.email`), never as the upstream author.
 - Conventional commit messages, signed off (`git commit -s`).
 - Once typecheck, lint, test and the bundle check pass and the change has been tried on the phone, fast-forward `origin/main`. Never force-push.
 

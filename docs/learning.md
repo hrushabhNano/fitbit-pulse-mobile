@@ -947,3 +947,9 @@ The accelerometer comes from `expo-sensors` (SDK 57's Expo module) rather than a
 
 References: [SDK 57 Accelerometer](https://docs.expo.dev/versions/v57.0.0/sdk/accelerometer/), [Android sensor rate limiting](https://developer.android.com/develop/sensors-and-location/sensors/sensors_overview#sensors-rate-limiting).
 
+
+## Variable fonts as static faces (Funnel)
+
+React Native on Android picks a custom font by its exact family name and ignores `fontWeight` for it, and it can't set a variable font's `wght` axis. So the glow design's Funnel Display and Funnel Sans (variable TTFs, 300 to 800) ship as static instances, one file and one family name per weight (`assets/fonts`, cut with fontTools' `varLib.instancer`, which the SIL OFL allows), loaded with `useFonts` from `src/glow/fonts.ts`. The same files feed Skia's typefaces in the chart explorer.
+
+References: [SDK 57 Font](https://docs.expo.dev/versions/v57.0.0/sdk/font/), [fontTools instancer](https://fonttools.readthedocs.io/en/latest/varLib/instancer.html).

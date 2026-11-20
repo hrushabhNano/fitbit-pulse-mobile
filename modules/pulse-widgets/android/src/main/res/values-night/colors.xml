@@ -1,9 +1,9 @@
 <!-- Pulse tokens (src/ui/palette.ts DARK; scripts/widgets.test.ts keeps them equal). -->
 <resources>
-  <color name="pulse_widget_bg_top">#1d2529</color>
-  <color name="pulse_widget_bg">#101518</color>
-  <color name="pulse_widget_card_top">#272a2d</color>
-  <color name="pulse_widget_card">#232629</color>
+  <color name="pulse_widget_bg_top">#000000</color>
+  <color name="pulse_widget_bg">#000000</color>
+  <color name="pulse_widget_card_top">#141416</color>
+  <color name="pulse_widget_card">#0f0f11</color>
   <color name="pulse_widget_card_edge">#0fffffff</color>
   <color name="pulse_widget_fg">#ffffff</color>
   <color name="pulse_widget_secondary">#babac0</color>

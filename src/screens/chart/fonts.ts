@@ -1,19 +1,22 @@
-// Barlow (numerals) and Figtree (words) as Skia fonts for the chart explorer, whose axes and readout are drawn on the
+// Funnel Display (numerals) and Funnel Sans (words) as Skia fonts for the chart explorer, whose axes and readout are drawn on the
 // UI thread inside the canvas (our other charts lay RN <Text> over theirs; a chart that pans every frame can't). From
 // halo src/ui/components/ChartFrame.tsx's typeface loader: the same TTFs expo-font registers, read once.
 import { useEffect, useSyncExternalStore } from "react";
 import { loadData, Skia, type SkFont, type SkTypeface } from "@shopify/react-native-skia";
-import { Barlow_500Medium } from "@expo-google-fonts/barlow/500Medium";
-import { Barlow_600SemiBold } from "@expo-google-fonts/barlow/600SemiBold";
-import { Barlow_700Bold } from "@expo-google-fonts/barlow/700Bold";
-import { Figtree_500Medium } from "@expo-google-fonts/figtree/500Medium";
-import { Figtree_600SemiBold } from "@expo-google-fonts/figtree/600SemiBold";
-import { Figtree_700Bold } from "@expo-google-fonts/figtree/700Bold";
+import { FUNNEL_FONTS } from "@/glow/fonts";
+import { FONT } from "@/glow/tokens";
 
 export type FaceWeight = 500 | 600 | 700;
 export type ChartFonts = { num: (weight: FaceWeight, size: number) => SkFont; sans: (weight: FaceWeight, size: number) => SkFont };
 
-const SOURCES = { n500: Barlow_500Medium, n600: Barlow_600SemiBold, n700: Barlow_700Bold, s500: Figtree_500Medium, s600: Figtree_600SemiBold, s700: Figtree_700Bold } as const;
+const SOURCES = {
+  n500: FUNNEL_FONTS[FONT.displayMedium],
+  n600: FUNNEL_FONTS[FONT.displaySemibold],
+  n700: FUNNEL_FONTS[FONT.displaySemibold],
+  s500: FUNNEL_FONTS[FONT.sansMedium],
+  s600: FUNNEL_FONTS[FONT.sansSemibold],
+  s700: FUNNEL_FONTS[FONT.sansBold],
+} as const;
 type FaceKey = keyof typeof SOURCES;
 const KEYS = Object.keys(SOURCES) as FaceKey[];
 
