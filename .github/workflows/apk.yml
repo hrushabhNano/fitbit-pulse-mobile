@@ -105,8 +105,8 @@ jobs:
         run: |
           gh release delete "$TAG" --cleanup-tag --yes || true
           previews=()
-          if [ -d modules/pulse-widgets/android/build/widget-previews ] && ls modules/pulse-widgets/android/build/widget-previews/glow-*.png >/dev/null 2>&1; then
-            (cd modules/pulse-widgets/android/build/widget-previews && zip -q "$GITHUB_WORKSPACE/glow-widget-previews.zip" glow-*.png)
+          if [ -d modules/pulse-widgets/android/build/widget-previews ] && ls modules/pulse-widgets/android/build/widget-previews/*.png >/dev/null 2>&1; then
+            (cd modules/pulse-widgets/android/build/widget-previews && zip -q "$GITHUB_WORKSPACE/glow-widget-previews.zip" *.png)
             previews=(glow-widget-previews.zip)
           fi
           gh release create "$TAG" "$FILE" "${previews[@]}" --prerelease --target "$GITHUB_SHA" \

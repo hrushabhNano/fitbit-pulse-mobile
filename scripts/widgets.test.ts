@@ -17,11 +17,16 @@ describe("widget native configuration", () => {
     expect(JSON.stringify(manifest)).toBe(once);
     expect(manifest.manifest.application[0].receiver[0]).toEqual(receiver);
     expect(manifest.manifest.application[0].activity[0]).toEqual(activity);
-    expect(manifest.manifest.application[0].receiver).toHaveLength(8);
-    expect(manifest.manifest.application[0].activity).toHaveLength(2);
-    expect(manifest.manifest.application[0].activity[1].$).toMatchObject({
-      "android:taskAffinity": "", "android:excludeFromRecents": "true", "android:theme": "@style/PulseWidgetConfigure",
-    });
+    expect(manifest.manifest.application[0].receiver).toHaveLength(12);
+    expect(manifest.manifest.application[0].activity).toEqual([activity]);
+    // Every declared glow provider has its class and its widget info.
+    const kotlin = readFileSync("modules/pulse-widgets/android/src/main/java/app/pulse/widgets/GlowWidgets.kt", "utf8");
+    for (const r of manifest.manifest.application[0].receiver.slice(1)) {
+      const cls = r.$["android:name"].split(".").pop();
+      expect(kotlin).toContain(`class ${cls} :`);
+      const res = r["meta-data"][0].$["android:resource"].replace("@xml/", "");
+      expect(readFileSync(`modules/pulse-widgets/android/src/main/res/xml/${res}.xml`, "utf8")).toContain("targetCellWidth");
+    }
   });
   it("keeps packaged native text in sync with English translation keys", () => {
     expect(readFileSync("modules/pulse-widgets/android/src/main/res/values/strings.xml", "utf8")).toBe(widgetStrings());

@@ -2,9 +2,9 @@
   "title": "Home screen widgets",
   "about": "See your last synced Pulse metrics without opening the app. Widgets display health information on your home screen; add them only where you are comfortable showing it.",
   "sizes": {
-    "small": "Small \u00b7 one metric",
-    "medium": "Medium \u00b7 three metrics",
-    "large": "Large \u00b7 six metrics + heart rate"
+    "small": "Today \u00b7 small",
+    "medium": "Overview \u00b7 wide",
+    "large": "Overview \u00b7 large"
   },
   "add": "Add widget",
   "added": "Confirm the widget on your home screen, then choose its metrics.",

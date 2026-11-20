@@ -25,9 +25,10 @@ class PulseWidgetsModule : Module() {
     Function("requestPin") { size: String ->
       val ctx = context()
       val provider = when (size) {
-        "small" -> PulseSmallWidgetProvider::class.java
-        "medium" -> PulseMediumWidgetProvider::class.java
-        "large" -> PulseLargeWidgetProvider::class.java
+        // The glow widgets this fork declares (GlowWidgets.kt).
+        "small" -> GlowTodayWidgetProvider::class.java
+        "medium" -> GlowOverviewWideWidgetProvider::class.java
+        "large" -> GlowOverviewLargeWidgetProvider::class.java
         else -> throw IllegalArgumentException("Unknown widget size")
       }
       val manager = AppWidgetManager.getInstance(ctx)

@@ -3,4 +3,4 @@
  android:minWidth="110dp" android:minHeight="110dp" android:minResizeWidth="110dp" android:minResizeHeight="110dp"
  android:targetCellWidth="2" android:targetCellHeight="2" android:updatePeriodMillis="1800000"
  android:initialLayout="@layout/glow_widget" android:previewLayout="@layout/glow_widget"
- android:description="@string/glow_widget_description" android:resizeMode="horizontal|vertical" android:widgetCategory="home_screen"/>
+ android:description="@string/glow_widget_about_steps" android:resizeMode="horizontal|vertical" android:widgetCategory="home_screen"/>

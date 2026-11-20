@@ -35,22 +35,38 @@ import kotlin.math.min
  * gives it. Always dark, as the app is. The whole widget opens its tab.
  */
 
-enum class GlowKind { TODAY, RECOVERY, SLEEP, STEPS }
+enum class GlowKind { TODAY, RECOVERY, SLEEP, STEPS, OVERVIEW }
 
 open class GlowWidgetProvider(private val kind: GlowKind) : AppWidgetProvider() {
   override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) { ids.forEach { renderGlowWidget(context, manager, it, kind) } }
   override fun onAppWidgetOptionsChanged(context: Context, manager: AppWidgetManager, id: Int, options: Bundle) { renderGlowWidget(context, manager, id, kind) }
 }
+// One provider per kind and default size, so the launcher's picker offers each size as its own entry; every one still
+// lays itself out by the size it is given (Small, Wide or Large).
 class GlowTodayWidgetProvider : GlowWidgetProvider(GlowKind.TODAY)
+class GlowTodayWideWidgetProvider : GlowWidgetProvider(GlowKind.TODAY)
+class GlowTodayLargeWidgetProvider : GlowWidgetProvider(GlowKind.TODAY)
 class GlowRecoveryWidgetProvider : GlowWidgetProvider(GlowKind.RECOVERY)
+class GlowRecoveryWideWidgetProvider : GlowWidgetProvider(GlowKind.RECOVERY)
 class GlowSleepWidgetProvider : GlowWidgetProvider(GlowKind.SLEEP)
+class GlowSleepWideWidgetProvider : GlowWidgetProvider(GlowKind.SLEEP)
 class GlowStepsWidgetProvider : GlowWidgetProvider(GlowKind.STEPS)
+class GlowStepsWideWidgetProvider : GlowWidgetProvider(GlowKind.STEPS)
+class GlowOverviewWideWidgetProvider : GlowWidgetProvider(GlowKind.OVERVIEW)
+class GlowOverviewLargeWidgetProvider : GlowWidgetProvider(GlowKind.OVERVIEW)
 
 internal val GLOW_PROVIDERS = listOf(
   GlowTodayWidgetProvider::class.java to GlowKind.TODAY,
+  GlowTodayWideWidgetProvider::class.java to GlowKind.TODAY,
+  GlowTodayLargeWidgetProvider::class.java to GlowKind.TODAY,
   GlowRecoveryWidgetProvider::class.java to GlowKind.RECOVERY,
+  GlowRecoveryWideWidgetProvider::class.java to GlowKind.RECOVERY,
   GlowSleepWidgetProvider::class.java to GlowKind.SLEEP,
+  GlowSleepWideWidgetProvider::class.java to GlowKind.SLEEP,
   GlowStepsWidgetProvider::class.java to GlowKind.STEPS,
+  GlowStepsWideWidgetProvider::class.java to GlowKind.STEPS,
+  GlowOverviewWideWidgetProvider::class.java to GlowKind.OVERVIEW,
+  GlowOverviewLargeWidgetProvider::class.java to GlowKind.OVERVIEW,
 )
 
 internal fun updateGlowWidgets(context: Context) {
@@ -84,7 +100,7 @@ internal fun glowViews(context: Context, id: Int, kind: GlowKind, snapshot: JSON
   val demoText = if (snapshot?.optString("source") == "demo") labels?.optString("demo")?.takeIf { it.isNotBlank() } else null
   val footer = demoText ?: if (stale) staleText else null
   val views = RemoteViews(context.packageName, R.layout.glow_widget)
-  val (bitmap, description, href) = art.draw(kind, glow, width, height, footer)
+  val (bitmap, description, href) = art.draw(kind, glow, width, height, footer, snapshot?.optJSONArray("metrics"))
   views.setImageViewBitmap(R.id.glow_art, bitmap)
   views.setContentDescription(R.id.glow_art, description)
   val target = href.takeIf { it.startsWith("pulse://") }?.let { if (it == "pulse://") "pulse:///" else it } ?: "pulse:///"
@@ -138,7 +154,7 @@ internal class GlowArt(private val context: Context) {
   }
 
   /** The widget's bitmap, what TalkBack reads, and what it opens. */
-  fun draw(kind: GlowKind, glow: JSONObject?, w: Float, h: Float, footer: String?): Triple<Bitmap, String, String> {
+  fun draw(kind: GlowKind, glow: JSONObject?, w: Float, h: Float, footer: String?, metrics: JSONArray? = null): Triple<Bitmap, String, String> {
     val r = 28f
     val pad = 18f
     if (glow == null) return waiting(kind, w, h, r, pad)
@@ -148,6 +164,7 @@ internal class GlowArt(private val context: Context) {
       GlowKind.RECOVERY -> recovery(glow.optJSONObject("recovery") ?: JSONObject(), b, w, h, r, pad, footer)
       GlowKind.SLEEP -> sleep(glow.optJSONObject("sleep") ?: JSONObject(), b, w, h, r, pad, footer)
       GlowKind.STEPS -> steps(glow.optJSONObject("steps") ?: JSONObject(), b, w, h, r, pad, footer)
+      GlowKind.OVERVIEW -> overview(glow, metrics, b, w, h, r, pad, footer)
     }
   }
 
@@ -156,6 +173,7 @@ internal class GlowArt(private val context: Context) {
     GlowKind.RECOVERY -> R.string.pulse_widget_metric_recovery
     GlowKind.SLEEP -> R.string.pulse_widget_metric_sleep
     GlowKind.STEPS -> R.string.pulse_widget_metric_steps
+    GlowKind.OVERVIEW -> R.string.glow_widget_today_title
   })
 
   private fun waiting(kind: GlowKind, w: Float, h: Float, r: Float, pad: Float): Triple<Bitmap, String, String> {
@@ -239,9 +257,10 @@ internal class GlowArt(private val context: Context) {
   }
 
   /** A dot a day joined by a thin line, today the only full dot. */
-  private fun trendDots(c: Canvas, values: List<Float?>, x: Float, y: Float, w: Float, h: Float) {
+  private fun trendDots(c: Canvas, values: List<Float?>, x: Float, y: Float, w: Float, h: Float, ink: Int = 0xFFFFFFFF.toInt()) {
     if (w < 40f) return
     val known = values.filterNotNull()
+    if (known.isEmpty()) return
     val lo = known.min(); val hi = known.max()
     val n = values.size
     fun px(i: Int) = x + 8f + i * (w - 16f) / max(1, n - 1)
@@ -249,8 +268,8 @@ internal class GlowArt(private val context: Context) {
     val line = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x59FFFFFF; strokeWidth = 1.5f; style = Paint.Style.STROKE }
     var prev: Pair<Float, Float>? = null
     values.forEachIndexed { i, v -> if (v == null) prev = null else { val p = px(i) to py(v); prev?.let { c.drawLine(it.first, it.second, p.first, p.second, line) }; prev = p } }
-    val dim = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x8CFFFFFF.toInt() }
-    val full = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFFFFFFFF.toInt() }
+    val dim = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = withAlpha(ink, .55f) }
+    val full = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ink }
     values.forEachIndexed { i, v -> if (v != null) c.drawCircle(px(i), py(v), if (i == n - 1) 5f else 3f, if (i == n - 1) full else dim) }
   }
 
@@ -277,7 +296,7 @@ internal class GlowArt(private val context: Context) {
         val numH = DotFont.height(dot)
         val top = barY - 14f - numH
         DotFont.draw(c, score, pad, top, dot)
-        val label = if (b == Bucket.SMALL) (asleep ?: g.optString("word")) else g.optString("word")
+        val label = if (b == Bucket.SMALL) (g.optString("asleepShort").takeIf { !g.isNull("asleepShort") && it.isNotBlank() } ?: "") else g.optString("word")
         line(c, label, pad + DotFont.width(score, dot) + 10f, top + numH - 17f, inner - DotFont.width(score, dot) - 10f, body)
         if (b == Bucket.LARGE) legend(c, parts, pad, top - 26f, inner)
       }
@@ -363,6 +382,118 @@ internal class GlowArt(private val context: Context) {
       val v = (s ?: 0f).coerceIn(0f, 1f)
       if (v > 0f) c.drawArc(box, -90f, if (v >= 1f) 359.9f else v * 360f, false, arc)
     }
+  }
+
+  // ── Overview ──────────────────────────────────────────────────────────────
+
+  private class Tile(val title: String, val value: String?, val word: String, val ink: Int, val picture: (Canvas, Float, Float, Float) -> Unit)
+
+  private fun metricOf(metrics: JSONArray?, key: String): JSONObject? {
+    if (metrics == null) return null
+    for (i in 0 until metrics.length()) metrics.optJSONObject(i)?.let { if (it.optString("key") == key) return it }
+    return null
+  }
+
+  private fun tiles(g: JSONObject, metrics: JSONArray?): List<Tile> {
+    val rec = g.optJSONObject("recovery") ?: JSONObject()
+    val sl = g.optJSONObject("sleep") ?: JSONObject()
+    val st = g.optJSONObject("steps") ?: JSONObject()
+    val en = g.optJSONObject("energy") ?: JSONObject()
+    val ld = g.optJSONObject("load") ?: JSONObject()
+    val titles = g.optJSONObject("titles") ?: JSONObject()
+    val hr = metricOf(metrics, "heart_rate")
+    val hrValue = hr?.takeIf { !it.isNull("value") }?.optString("display")
+    val hrTrend = hr?.optJSONArray("trend").numbers()
+    val stages = sl.optJSONObject("stages") ?: JSONObject()
+    val parts = listOf("deep" to Ink.sleepDeep, "rem" to Ink.sleepRem, "light" to Ink.sleepLight, "awake" to Ink.sleepAwake).map { (k, col) -> Triple(k, stages.optDouble(k, 0.0).toFloat(), col) }
+    fun str(o: JSONObject, k: String) = o.optString(k).takeIf { !o.isNull(k) && it.isNotBlank() }
+    return listOf(
+      Tile(rec.optString("title"), str(rec, "score"), rec.optString("word"), Ink.recovery) { c, x, y, w -> trendDots(c, rec.optJSONArray("week").numbers().map { it }, x, y - 4f, w, 18f, Ink.recovery) },
+      Tile(sl.optString("title"), str(sl, "score"), str(sl, "asleepShort") ?: "", Ink.sleepDeep) { c, x, y, w -> stageBar(c, parts, x, y + 4f, w, 6f) },
+      Tile(st.optString("title"), str(st, "value"), str(st, "goal")?.let { "/ $it" } ?: "", Ink.steps) { c, x, y, w -> fillBar(c, st.optDouble("share", 0.0).toFloat(), x, y + 4f, w, Ink.steps) },
+      Tile(en.optString("title"), str(en, "value"), "", Ink.energy) { c, x, y, w -> fillBar(c, en.optDouble("level", 0.0).toFloat(), x, y + 4f, w, Ink.energy) },
+      Tile(ld.optString("title"), str(ld, "value"), ld.optString("word"), 0xFFA78BFA.toInt()) { c, x, y, w -> fillBar(c, ld.optDouble("level", 0.0).toFloat(), x, y + 4f, w, 0xFFA78BFA.toInt()) },
+      Tile(titles.optString("heartRate"), hrValue, if (hrValue != null) "bpm" else "", Ink.heart) { c, x, y, w -> if (hrTrend.count { it != null } > 1) sparkline(c, hrTrend, x, y - 4f, w, 18f, Ink.heart) },
+    )
+  }
+
+  private fun fillBar(c: Canvas, share: Float, x: Float, y: Float, w: Float, ink: Int) {
+    val p = Paint(Paint.ANTI_ALIAS_FLAG)
+    p.color = 0x24FFFFFF; c.drawRoundRect(RectF(x, y, x + w, y + 5f), 2.5f, 2.5f, p)
+    p.color = ink; c.drawRoundRect(RectF(x, y, x + max(5f, w * share.coerceIn(0f, 1f)), y + 5f), 2.5f, 2.5f, p)
+  }
+
+  private fun sparkline(c: Canvas, values: List<Float?>, x: Float, y: Float, w: Float, h: Float, ink: Int) {
+    val known = values.filterNotNull(); if (known.size < 2) return
+    val lo = known.min(); val hi = known.max(); val n = values.size
+    val p = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = ink; strokeWidth = 1.6f; style = Paint.Style.STROKE; strokeJoin = Paint.Join.ROUND }
+    var prev: Pair<Float, Float>? = null
+    values.forEachIndexed { i, v ->
+      if (v == null) { prev = null; return@forEachIndexed }
+      val px = x + i * w / max(1, n - 1); val py = if (hi == lo) y + h / 2 else y + h - (v - lo) / (hi - lo) * h
+      prev?.let { c.drawLine(it.first, it.second, px, py, p) }; prev = px to py
+    }
+  }
+
+  /** A tile on the Overview: picture card surface, title, the number in dots, a word, its picture. */
+  private fun tile(c: Canvas, t: Tile, x: Float, y: Float, w: Float, h: Float) {
+    c.save(); c.translate(x, y)
+    drawPictureCard(c, w, h, 18f)
+    val p = 12f
+    val inner = w - p * 2
+    line(c, t.title, p, p, inner, text(sansMedium, 12f, 0xDBFFFFFF.toInt()))
+    val value = t.value ?: "--"
+    val dot = DotFont.fit(value, 3f, inner)
+    val numTop = h - p - 16f - DotFont.height(dot)
+    DotFont.draw(c, value, p, numTop, dot, if (t.value == null) 0x4DFFFFFF else 0xFFFFFFFF.toInt())
+    if (t.word.isNotBlank()) line(c, t.word, p, h - p - 13f, inner, text(sans, 10.5f, 0xB8FFFFFF.toInt()))
+    t.picture(c, p, p + 24f, inner)
+    c.restore()
+  }
+
+  private fun overview(g: JSONObject, metrics: JSONArray?, b: Bucket, w: Float, h: Float, r: Float, pad: Float, footer: String?): Triple<Bitmap, String, String> {
+    val hero = g.optJSONObject("hero") ?: JSONObject()
+    val angle = if (hero.isNull("angle")) null else hero.optDouble("angle", 270.0).toFloat()
+    val look = Look.hero(Ink.parse(hero.optString("ink"), Ink.recovery), angle, hero.optDouble("rim", 1.0).toFloat(), Mood.of(hero.optString("mood")))
+    val all = tiles(g, metrics)
+    val bmp = blank(w, h) { c ->
+      if (b == Bucket.LARGE) {
+        // The moment's hero across the top, then the day as six tiles.
+        c.drawRoundRect(RectF(0f, 0f, w, h), r, r, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xFF000000.toInt() })
+        val heroH = h * .36f
+        drawGlow(c, look, w, heroH, r)
+        line(c, hero.optString("title"), pad, pad, w - pad * 2, this.title)
+        block(c, hero.optString("sentence"), pad, pad + 26f, w - pad * 2, sentence(16f), 2)
+        val gap = 8f
+        val top = heroH + gap
+        val tw = (w - gap * 2) / 3f
+        val th = (h - top - gap - if (footer != null) 18f else 0f) / 2f
+        all.forEachIndexed { i, t -> tile(c, t, (i % 3) * (tw + gap), top + (i / 3) * (th + gap), tw, th) }
+        if (footer != null) line(c, footer, pad, h - 15f, w - pad * 2, text(sansMedium, 10.5f, 0xFFFFB547.toInt()))
+      } else {
+        // The moment's light behind four figures in a row.
+        drawGlow(c, look, w, h, r)
+        val inner = w - pad * 2
+        line(c, hero.optString("title"), pad, pad, inner, this.title)
+        val four = all.take(4)
+        val cols = if (b == Bucket.SMALL) 2 else 4
+        val shown = four.take(if (b == Bucket.SMALL) 2 else 4)
+        val cw = inner / cols
+        val end = bottom(h, pad, footer)
+        shown.forEachIndexed { i, t ->
+          val x = pad + i * cw
+          val value = t.value ?: "--"
+          val dot = DotFont.fit(value, 3.6f, cw - 10f)
+          val numH = DotFont.height(dot)
+          line(c, t.title, x, end - numH - 34f, cw - 8f, text(sansMedium, 11.5f, 0xDBFFFFFF.toInt()))
+          DotFont.draw(c, value, x, end - numH - 12f, dot, if (t.value == null) 0x4DFFFFFF else 0xFFFFFFFF.toInt())
+          t.picture(c, x, end - 6f, cw - 12f)
+        }
+        footerLine(c, footer, w, h, pad)
+      }
+    }
+    val text = all.joinToString(". ") { "${it.title} ${it.value ?: "--"} ${it.word}".trim() }
+    return Triple(bmp, "${hero.optString("title")}. $text", "pulse:///")
   }
 }
 

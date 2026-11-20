@@ -11,8 +11,9 @@ function widgetStrings() {
     ...Object.fromEntries(Object.entries(copy.state).map(([k, v]) => [`pulse_widget_${k}`, v])),
     ...Object.fromEntries(Object.entries(copy.labels).map(([key, value]) => [`pulse_widget_metric_${key}`, value])),
     // The glow widgets (GlowWidgets.kt), from the glow namespace.
-    glow_widget_today: glow.widget.today, glow_widget_recovery: glow.widget.recovery, glow_widget_sleep: glow.widget.sleep, glow_widget_steps: glow.widget.steps,
+    glow_widget_today: glow.widget.today, glow_widget_recovery: glow.widget.recovery, glow_widget_sleep: glow.widget.sleep, glow_widget_steps: glow.widget.steps, glow_widget_overview: glow.widget.overview,
     glow_widget_description: glow.widget.description, glow_widget_open: glow.widget.open, glow_widget_today_title: glow.tabs.today,
+    ...Object.fromEntries(Object.entries(glow.widget.about).map(([key, value]) => [`glow_widget_about_${key}`, value])),
     ...Object.fromEntries(Object.entries(glow.stage).map(([key, value]) => [`glow_widget_stage_${key}`, value])),
   };
   return `<?xml version="1.0" encoding="utf-8"?>\n<resources>\n${Object.entries(values).map(([k, v]) => `  <string name="${k}">${esc(v)}</string>`).join("\n")}\n</resources>\n`;

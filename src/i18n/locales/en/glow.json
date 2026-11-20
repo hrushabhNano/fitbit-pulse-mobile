@@ -76,8 +76,8 @@
     "bodyMorning": "Your body this morning",
     "nightVitals": "Night vitals",
     "regularity": "Regularity",
-    "load": "Load",
-    "loadTarget": "Today's target {{low}} to {{high}}",
+    "load": "Strain",
+    "loadTarget": "Target {{low}}–{{high}}%",
     "workouts": "Workouts",
     "allWorkouts": "All workouts",
     "startWorkout": "Start a workout",
@@ -159,6 +159,15 @@
     "sleep": "Pulse Glow · Sleep",
     "steps": "Pulse Glow · Steps",
     "description": "The part of your day that matters now, in the Pulse Glow look.",
-    "open": "Open Pulse Glow and sync"
+    "open": "Open Pulse Glow and sync",
+    "overview": "Pulse Glow · Overview",
+    "overviewTitle": "Today",
+    "about": {
+      "today": "What matters now: your recovery in the morning, energy through the day, sleep at night.",
+      "recovery": "Your recovery score, its change since yesterday and the last 7 days.",
+      "sleep": "Last night's sleep score, time asleep and sleep stages.",
+      "steps": "Your steps against your goal, and your week.",
+      "overview": "Your whole day at a glance: recovery, sleep, steps, energy, strain and heart rate."
+    }
   }
 }

@@ -19,9 +19,12 @@ import org.robolectric.annotation.GraphicsMode
 import java.io.File
 import java.time.Instant
 
-/** Draws every glow widget at a Small, a Wide and a Large from snapshots of the demo data, and saves them for review. */
+/**
+ * Draws every glow widget at a Small, a Wide and a Large from snapshots of the demo data, and saves them for review;
+ * the picker previews (`preview-*.png`) are each provider's default size at xxhdpi.
+ */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [35])
+@Config(sdk = [35], qualifiers = "xxhdpi")
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class GlowWidgetTest {
   private val sizes = listOf("small" to (170 to 170), "wide" to (360 to 170), "large" to (360 to 360))
@@ -41,7 +44,7 @@ class GlowWidgetTest {
     assertTrue("$name has no description", !image.contentDescription.isNullOrBlank())
     val out = Bitmap.createBitmap(pw, ph, Bitmap.Config.ARGB_8888)
     view.draw(Canvas(out))
-    File("build/widget-previews").apply { mkdirs() }.let { dir -> File(dir, "glow-$name.png").outputStream().use { out.compress(Bitmap.CompressFormat.PNG, 100, it) } }
+    File("build/widget-previews").apply { mkdirs() }.let { dir -> File(dir, "$name.png").outputStream().use { out.compress(Bitmap.CompressFormat.PNG, 100, it) } }
     return art!!
   }
 
@@ -49,8 +52,8 @@ class GlowWidgetTest {
     for (moment in listOf("waking", "midday", "evening")) {
       val snapshot = fixture(moment)
       for (kind in GlowKind.values()) for ((size, wh) in sizes) {
-        if (kind != GlowKind.TODAY && moment != "midday") continue
-        val art = render(kind, snapshot, nowFor(moment), wh.first, wh.second, "${kind.name.lowercase()}-$size-$moment")
+        if (kind != GlowKind.TODAY && kind != GlowKind.OVERVIEW && moment != "midday") continue
+        val art = render(kind, snapshot, nowFor(moment), wh.first, wh.second, "glow-${kind.name.lowercase()}-$size-$moment")
         // The light reaches the card: not one flat colour.
         val a = art.getPixel(art.width / 8, art.height - art.height / 8)
         val b = art.getPixel(art.width - art.width / 8, art.height / 8)
@@ -59,11 +62,24 @@ class GlowWidgetTest {
     }
   }
 
+  /** The launcher picker's preview of each provider at its default size (res/drawable-nodpi/glow_preview_*). */
+  @Test fun pickerPreviews() {
+    val snapshot = fixture("midday")
+    val now = nowFor("midday")
+    listOf(
+      Triple("today", GlowKind.TODAY, 170 to 170), Triple("today_wide", GlowKind.TODAY, 360 to 170), Triple("today_large", GlowKind.TODAY, 360 to 360),
+      Triple("recovery", GlowKind.RECOVERY, 170 to 170), Triple("recovery_wide", GlowKind.RECOVERY, 360 to 170),
+      Triple("sleep", GlowKind.SLEEP, 170 to 170), Triple("sleep_wide", GlowKind.SLEEP, 360 to 170),
+      Triple("steps", GlowKind.STEPS, 170 to 170), Triple("steps_wide", GlowKind.STEPS, 360 to 170),
+      Triple("overview_wide", GlowKind.OVERVIEW, 360 to 170), Triple("overview_large", GlowKind.OVERVIEW, 360 to 360),
+    ).forEach { (name, kind, wh) -> render(kind, snapshot, now, wh.first, wh.second, "preview-$name") }
+  }
+
   @Test fun anotherDayOrNoDataShowsTheWaitingCard() {
     val snapshot = fixture("midday")
     for (kind in GlowKind.values()) {
-      val old = render(kind, snapshot, nowFor("midday") + 2 * 86_400, 170, 170, "${kind.name.lowercase()}-nextday")
-      val none = render(kind, null, nowFor("midday"), 170, 170, "${kind.name.lowercase()}-empty")
+      val old = render(kind, snapshot, nowFor("midday") + 2 * 86_400, 170, 170, "glow-${kind.name.lowercase()}-nextday")
+      val none = render(kind, null, nowFor("midday"), 170, 170, "glow-${kind.name.lowercase()}-empty")
       assertEquals(old.width, none.width)
     }
   }

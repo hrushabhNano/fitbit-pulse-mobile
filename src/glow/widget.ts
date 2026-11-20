@@ -16,9 +16,13 @@ export type GlowWidgetData = {
   /** The Today widget's hero: its title, sentence, ink, light and the one dotted number. */
   hero: { title: string; sentence: string; ink: string; angle: number | null; rim: number; mood: "day" | "evening" | "night"; value: string | null; unit: string; href: string };
   recovery: { title: string; score: string | null; word: string; note: string; sentence: string; week: (number | null)[]; waiting: string | null; href: string };
-  sleep: { title: string; score: string | null; word: string; asleep: string | null; stages: { deep: number; rem: number; light: number; awake: number }; waiting: string | null; href: string };
+  sleep: { title: string; score: string | null; word: string; asleep: string | null; asleepShort: string | null; stages: { deep: number; rem: number; light: number; awake: number }; waiting: string | null; href: string };
   steps: { title: string; value: string; goal: string; share: number; met: boolean; word: string; week: (number | null)[]; href: string };
   energy: { title: string; value: string | null; level: number; word: string };
+  /** The day's Strain against today's target band, for the Overview. */
+  load: { title: string; value: string | null; level: number; target: [number, number] | null; word: string };
+  /** Overview tile titles. */
+  titles: { overview: string; heartRate: string; stress: string; sync: string };
 };
 
 /** The glow namespace by a key worked out at run time (moments, bands, stages). */
@@ -51,6 +55,7 @@ export function buildGlowWidget({ moment, home, recovery, sleep, steps, bedtimeI
   const sleepScore = sleep.performance.value;
 
   const e = home.energyBank.value;
+  const strain = home.dials.strain.value;
   const stepCount = steps?.value ?? null;
 
   const look = MOMENT_LOOK[moment];
@@ -104,6 +109,7 @@ export function buildGlowWidget({ moment, home, recovery, sleep, steps, bedtimeI
       score: sleepScore === null ? null : String(Math.round(sleepScore)),
       word: t("word.sleepScore"),
       asleep: asleepMin === null ? null : t("hero.asleep", { time: durationWords(asleepMin) }).replace(/\.$/, ""),
+      asleepShort: asleepMin === null ? null : `${Math.floor(asleepMin / 60)} h ${String(Math.round(asleepMin) % 60).padStart(2, "0")}`,
       stages: { deep: stage("deep"), rem: stage("rem"), light: stage("light"), awake: stage("awake") },
       waiting: sleepScore === null ? reasonCopy(sleep.performance.reason, sleep.performance.nightsLeft).short : null,
       href: "pulse://tab-sleep",
@@ -124,5 +130,20 @@ export function buildGlowWidget({ moment, home, recovery, sleep, steps, bedtimeI
       level: e ? Math.min(1, Math.max(0, e.current / 100)) : 0,
       word: e ? t("word.atWaking", { value: Math.round(e.startLevel) }) : t("hero.energy.waiting"),
     },
+    load: {
+      title: t("card.load"),
+      value: strain === null ? null : `${Math.round(strain)}%`,
+      level: strain === null ? 0 : Math.min(1, Math.max(0, strain / 100)),
+      target: home.dials.strainTarget,
+      word:
+        strain === null || !home.dials.strainTarget
+          ? ""
+          : strain > home.dials.strainTarget[1]
+            ? t("word.aboveUsual")
+            : strain < home.dials.strainTarget[0]
+              ? t("card.loadTarget", { low: Math.round(home.dials.strainTarget[0]), high: Math.round(home.dials.strainTarget[1]) })
+              : t("word.usual"),
+    },
+    titles: { overview: t("widget.overviewTitle"), heartRate: t("card.heartRate"), stress: t("card.stress"), sync: t("header.sync.ok") },
   };
 }

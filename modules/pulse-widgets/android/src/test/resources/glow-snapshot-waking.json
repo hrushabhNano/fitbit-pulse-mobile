@@ -164,6 +164,7 @@
    "score": "86",
    "word": "Sleep score",
    "asleep": "7 hours 13 minutes asleep",
+   "asleepShort": "7 h 13",
    "stages": {
     "deep": 93,
     "rem": 86,
@@ -196,6 +197,22 @@
    "value": "52",
    "level": 0.517,
    "word": "79 at waking"
+  },
+  "load": {
+   "title": "Strain",
+   "value": "25%",
+   "level": 0.2451,
+   "target": [
+    61.3,
+    99.6
+   ],
+   "word": "Target 61–100%"
+  },
+  "titles": {
+   "overview": "Today",
+   "heartRate": "Heart rate",
+   "stress": "Stress",
+   "sync": "Synced"
   }
  }
 }
