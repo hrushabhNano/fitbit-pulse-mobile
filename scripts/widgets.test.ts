@@ -21,7 +21,7 @@ describe("widget native configuration", () => {
     expect(manifest.manifest.application[0].activity).toEqual([activity]);
     // Every declared glow provider has its class and its widget info.
     const kotlin = readFileSync("modules/pulse-widgets/android/src/main/java/app/pulse/widgets/GlowWidgets.kt", "utf8");
-    for (const r of manifest.manifest.application[0].receiver.slice(1)) {
+    for (const r of manifest.manifest.application[0].receiver.slice(1) as unknown as { $: Record<string, string>; "meta-data": { $: Record<string, string> }[] }[]) {
       const cls = r.$["android:name"].split(".").pop();
       expect(kotlin).toContain(`class ${cls} :`);
       const res = r["meta-data"][0].$["android:resource"].replace("@xml/", "");
