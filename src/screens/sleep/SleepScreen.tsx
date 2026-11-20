@@ -19,7 +19,7 @@ import { InsightCard } from "@/ui/metrics/InsightCard";
 import { KeyStatRow } from "@/ui/metrics/KeyStatRow";
 import { CAPTION, LABEL } from "@/ui/metrics/primitives";
 import { ReasonPlaceholder } from "@/ui/metrics/ReasonPlaceholder";
-import { ScoreDial } from "@/ui/metrics/ScoreDial";
+import { LastNightHero } from "@/glow/tabs/SleepTab";
 import { SleepStages } from "@/ui/metrics/SleepStages";
 import { DetailShell } from "@/ui/shells/DetailShell";
 import { useSelectedDay } from "@/ui/shells/DateSwitcher";
@@ -77,7 +77,6 @@ function Sleep({ vm, weekly, timeZone }: { vm: SleepPageVM; weekly: TrendViewVM[
   const coach = coachReady(setup) && vm.hours.value !== null;
   const { today } = useShellCalendar();
   const d = vm.day;
-  const p = vm.performance;
   return (
     <View className="flex-1">
       <DetailShell
@@ -86,19 +85,8 @@ function Sleep({ vm, weekly, timeZone }: { vm: SleepPageVM; weekly: TrendViewVM[
         bodySkeleton={SLEEP_BODY_SKELETON}
         info={SLEEP_INFO}
         dateSwitcher={{ mode: "day", placement: "header", steppers: false }}
-        notch
-        hero={
-          <ScoreDial
-            variant="sleep"
-            size="lg"
-            value={p.value}
-            reason={p.reason}
-            nightsLeft={p.nightsLeft}
-            provisional={p.provisional}
-            tags={p.tags}
-            status={p.value === null ? undefined : p.value >= 85 ? "optimal" : p.value >= 70 ? "sufficient" : "poor"}
-          />
-        }
+        heroWide
+        hero={<LastNightHero sleep={vm} />}
         summary={
           <Card className="gap-0 px-4 py-1">
             {vm.summary.map((k, i) => (

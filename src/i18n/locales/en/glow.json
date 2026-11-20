@@ -60,7 +60,14 @@
     "pastLine": "How the day began.",
     "asleep": "{{time}} asleep.",
     "bedToWake": "{{bed}} to {{wake}}",
-    "afterShort": "After your workout. Heart rate settling."
+    "afterShort": "After your workout. Heart rate settling.",
+    "strain": {
+      "above": "Above your target today. Recovery will ask for more tonight.",
+      "within": "Inside your target. A good day's work.",
+      "below": "Below your target so far. Room for more.",
+      "noTarget": "Strain builds as you move through the day.",
+      "waiting": "No heart rate yet today."
+    }
   },
   "card": {
     "recovery": "Recovery",

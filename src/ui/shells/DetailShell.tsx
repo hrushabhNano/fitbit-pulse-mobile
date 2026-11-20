@@ -34,6 +34,8 @@ export type DetailShellProps = {
   ground?: "default" | "healthspan";
   /** The hero component. With `collapse`, it must accept `compact` (or forward it to the component inside). */
   hero?: ReactNode;
+  /** The hero is a glow card (src/glow): it fills the column, and the summary below takes no notch. */
+  heroWide?: boolean;
   stats?: HeaderStats;
   collapse?: boolean;
   summary?: ReactNode;
@@ -56,7 +58,7 @@ export type DetailShellProps = {
   instant?: boolean;
 };
 
-export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dismiss, align, titleIcon, action, ground, hero, stats, collapse, summary, notch, insight, primary, secondary, footer, bodySkeleton, loading, instant, onRefresh, floatingAction }: DetailShellProps) {
+export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dismiss, align, titleIcon, action, ground, hero, heroWide, stats, collapse, summary, notch, insight, primary, secondary, footer, bodySkeleton, loading, instant, onRefresh, floatingAction }: DetailShellProps) {
   const insets = useSafeAreaInsets();
   const side = summary ?? (hero ? insight : null);
   const inHeader = dateSwitcher?.placement === "header";
@@ -89,7 +91,7 @@ export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dis
         )}
         <View removeClippedSubviews className="gap-8">
           {!!(hero || side) && (
-            <View className="gap-6">
+            <View className={heroWide ? "gap-3" : "gap-6"}>
               {!!hero && (
                 <View
                   ref={heroBox}
@@ -100,14 +102,14 @@ export function DetailShell({ title, subtitle, info, backHref, dateSwitcher, dis
                       threshold.value = Math.max(0, y + h + scrollY.value - headerHeight);
                     })
                   }
-                  className="items-center"
+                  className={heroWide ? "items-stretch" : "items-center"}
                 >
                   {hero}
                 </View>
               )}
               {!!side && (
                 <View className="min-w-0">
-                  {notch && !!summary && <Notch />}
+                  {notch && !heroWide && !!summary && <Notch />}
                   {side}
                 </View>
               )}

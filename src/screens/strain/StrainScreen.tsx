@@ -21,7 +21,7 @@ import { ZoneBars, ZoneBarsSkeleton } from "@/ui/charts/ZoneBars"
 import { ActivityCard, TimelineSkeleton } from "@/ui/metrics/ActivityCard"
 import { InsightCard } from "@/ui/metrics/InsightCard"
 import { KeyStatRow } from "@/ui/metrics/KeyStatRow"
-import { ScoreDial } from "@/ui/metrics/ScoreDial"
+import { StrainHero } from "@/glow/Cards"
 import { SkeletonText } from "@/ui/Skeleton"
 import { DetailShell } from "@/ui/shells/DetailShell"
 import { EmptyState } from "@/ui/shells/EmptyState"
@@ -75,8 +75,8 @@ export function StrainScreen() {
       bodySkeleton={<BodySkeleton />}
       info={STRAIN_INFO}
       dateSwitcher={{ mode: "day", placement: "header", steppers: false }}
-      notch
-      hero={<ScoreDial variant="strain" size="lg" value={s.value} reason={s.reason} target={t ? [t.low, t.high] : null} extraTags={vm.soFar && s.value !== null ? ["so_far"] : undefined} />}
+      heroWide
+      hero={<StrainHero strain={s} target={t ? [t.low, t.high] : null} soFar={vm.soFar && s.value !== null} />}
       summary={
         <Card className="gap-0 px-4 py-1">
           <Divided>

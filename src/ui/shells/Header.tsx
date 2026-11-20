@@ -18,7 +18,8 @@ import { Press } from "../Press";
 // The pieces every header shares (spec §4.3, §4.4): the ground fill, the 24 px fade, the three-slot row.
 
 /** Detail header title, date pill label and tab-root title roles (spec §3.4): 12 px caps. */
-export const HEADER_TITLE = "text-xs font-bold uppercase leading-5 tracking-[0.1em]";
+// The glow design's header date: Funnel Display 500, 20 on 24 (unstrap spec 2.3).
+export const HEADER_TITLE = "font-numeric text-[20px] font-semibold leading-6";
 /** A header row is 44 px tall. */
 export const HEADER_ROW = 44;
 /** The lower 24 px fade content scrolls into. */

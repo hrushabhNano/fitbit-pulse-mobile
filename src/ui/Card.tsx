@@ -2,16 +2,17 @@ import { createContext, useContext } from "react";
 import { View, type StyleProp, type ViewProps, type ViewStyle } from "react-native";
 import { cn } from "./cn";
 import { Gradient } from "./Gradient";
-import { edge, ring as ringLayer, useShadow } from "./shadow";
+import { ring as ringLayer, useShadow } from "./shadow";
 import { useTheme } from "./theme";
 import { RADIUS } from "./radius";
 
 /**
- * The opaque card material (spec §2.6): 16 px corners, a top hairline (dark) or a 1 px ring and soft shadow (light).
+ * The opaque card material, in the glow design's picture-card surface (unstrap spec 2.5): 28 px corners, near-black,
+ * a white 8 % hairline all round.
  * The fill fades 2-4 % lighter toward the top (`card-top` to `card`) as on the web: that is <CardFill>, the first child
  * of anything wearing this class. `overflow-hidden` clips the fill to the corners.
  */
-export const CARD_CLASS = "overflow-hidden rounded-2xl bg-card";
+export const CARD_CLASS = "overflow-hidden rounded-4xl bg-card";
 
 /** A row set into a card, a legend or a note (the web's rounded-lg bg-inset px-3). Add the vertical padding. */
 export const INSET_ROW = "rounded-lg bg-inset px-3";
@@ -42,7 +43,7 @@ export function CardFill({ ring }: { ring?: string }) {
 export function CardEdge({ ring }: { ring?: string }) {
   const { c } = useTheme();
   const shadow = useShadow();
-  return <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, borderRadius: RADIUS["2xl"], boxShadow: shadow(edge(c["card-edge"]), ring && ringLayer(ring)) }} />;
+  return <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, borderRadius: RADIUS["4xl"], boxShadow: shadow(ringLayer(c["card-edge"]), ring && ringLayer(ring)) }} />;
 }
 
 /** True inside a <Card>: a row in a card steps down to a flat secondary row (the web's `in-data-[slot=card]:`), no card in a card. */
@@ -53,7 +54,7 @@ export const useInCard = () => useContext(InCard);
 export function useCardStyle(...extra: (string | false | undefined)[]): ViewStyle & { boxShadow: string } {
   const { c } = useTheme();
   const shadow = useShadow();
-  return { boxShadow: shadow(edge(c["card-edge"]), "card", ...extra) };
+  return { boxShadow: shadow(ringLayer(c["card-edge"]), "card", ...extra) };
 }
 
 /** `ring`: a 1 px ring colour (the web's `ring-1 ring-*`: an alert's red, a selected card's white) drawn inside the edge. */

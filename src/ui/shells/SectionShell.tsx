@@ -36,7 +36,7 @@ const go = (href: string) => push(href);
 export function ActionLink({ label, href }: { label: string; href: string }) {
   return (
     <Press activeOpacity={0.7} accessibilityRole="link" onPress={() => go(href)} hitSlop={{ top: 14, bottom: 14, left: 8, right: 8 }} className="flex-row items-center gap-0.5">
-      <Text className="text-xs font-bold uppercase leading-4 tracking-[0.1em] text-foreground-secondary">{label}</Text>
+      <Text className="text-[15px] font-medium leading-5 text-foreground-secondary">{label}</Text>
       <Icon icon={ChevronRight} size={14} tone="foreground-secondary" strokeWidth={2} />
     </Press>
   );
@@ -66,7 +66,7 @@ function Shell({ variant, title, info, action, aside, icon, href, fill, classNam
       <View className={cn("min-w-0", className)}>
         {/* Equal header heights keep neighbouring card bodies aligned. */}
         <View className="mb-3 min-h-[34px] flex-row items-center justify-between gap-3">
-          <Text accessibilityRole="header" className="shrink text-[22px] font-semibold leading-7 tracking-[-0.01em]">
+          <Text accessibilityRole="header" className="shrink font-numeric text-[22px] font-normal leading-7">
             {title}
           </Text>
           {!!(aside || actionNode) && (
@@ -88,7 +88,7 @@ function Shell({ variant, title, info, action, aside, icon, href, fill, classNam
         {!!icon && <View className="size-5 items-center justify-center">{icon}</View>}
         {/* One line, as the reference app's card titles: a title too long for a narrow card (Health Monitor beside Stress
             Monitor) shrinks slightly rather than wrapping, so cards side by side keep matching headers. */}
-        <Text accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} className="shrink text-xs font-bold uppercase leading-4 tracking-[0.1em]">
+        <Text accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} className="shrink text-[17px] font-medium leading-[22px]">
           {title}
         </Text>
       </View>

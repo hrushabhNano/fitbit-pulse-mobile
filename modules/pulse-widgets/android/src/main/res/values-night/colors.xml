@@ -2,8 +2,8 @@
 <resources>
   <color name="pulse_widget_bg_top">#000000</color>
   <color name="pulse_widget_bg">#000000</color>
-  <color name="pulse_widget_card_top">#141416</color>
-  <color name="pulse_widget_card">#0f0f11</color>
+  <color name="pulse_widget_card_top">#0a0a0b</color>
+  <color name="pulse_widget_card">#0a0a0b</color>
   <color name="pulse_widget_card_edge">#0fffffff</color>
   <color name="pulse_widget_fg">#ffffff</color>
   <color name="pulse_widget_secondary">#babac0</color>

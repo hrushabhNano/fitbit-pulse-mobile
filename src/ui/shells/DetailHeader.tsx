@@ -42,8 +42,8 @@ export const detailRowHeight = ({ subtitle, dateTitle }: Pick<DetailHeaderProps,
 export function DetailHeaderRow({ title, subtitle, info, backHref, dateTitle, dismiss = "back", align = "center", titleIcon, action, onBack, className, centerStyle }: DetailHeaderProps & { className?: string; centerStyle?: ComponentProps<typeof Animated.View>["style"] }) {
   const close = dismiss === "close";
   const back = (
-    <Press activeBg="bg-fill-hover" accessibilityRole="button" accessibilityLabel={i18n.t(close ? "common:actions.close" : "common:actions.back")} onPress={onBack ?? (() => goBack(backHref))} className="size-11 items-center justify-center rounded-full">
-      <Icon icon={close ? X : ChevronLeft} size={close ? 24 : 26} tone="foreground" strokeWidth={1.75} />
+    <Press activeBg="bg-fill-hover" accessibilityRole="button" accessibilityLabel={i18n.t(close ? "common:actions.close" : "common:actions.back")} onPress={onBack ?? (() => goBack(backHref))} className="size-11 items-center justify-center rounded-full bg-secondary">
+      <Icon icon={close ? X : ChevronLeft} size={close ? 20 : 22} tone="foreground" strokeWidth={1.75} />
     </Press>
   );
   const right = action ?? (info && <InfoButton info={info} label={title} variant="header" />);

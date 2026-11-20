@@ -11,7 +11,7 @@ import { type QueryCtx, todayOf } from "@/queries/common"
 import { Card } from "@/ui/Card"
 import { InsightCard } from "@/ui/metrics/InsightCard"
 import { KeyStatRow } from "@/ui/metrics/KeyStatRow"
-import { ScoreDial } from "@/ui/metrics/ScoreDial"
+import { RecoveryHero } from "@/glow/Cards"
 import { DetailShell } from "@/ui/shells/DetailShell"
 import { RECOVERY_INFO } from "@/screens/_lib/info"
 import { statProps, TodayVsLegend } from "@/screens/_lib/view"
@@ -40,7 +40,6 @@ export function RecoveryScreen() {
 
   if (!data) return error ? <ScreenError retry={reload} /> : <RecoverySkeleton />
   const { d, today, vm, extras, weekly } = data
-  const r = vm.recovery
 
   return (
     <DetailShell
@@ -48,8 +47,8 @@ export function RecoveryScreen() {
       bodySkeleton={<WeeklySkeleton />}
       info={RECOVERY_INFO}
       dateSwitcher={{ mode: "day", placement: "header", steppers: false }}
-      notch
-      hero={<ScoreDial variant="recovery" size="lg" value={r.value} reason={r.reason} nightsLeft={r.nightsLeft} provisional={r.provisional} tags={r.tags} />}
+      heroWide
+      hero={<RecoveryHero vm={vm} />}
       summary={
         <Card className="gap-0 px-4 py-1">
           <Divided>

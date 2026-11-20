@@ -32,7 +32,7 @@ function Waiting({ metric }: { metric: Pick<Metric<unknown>, "reason" | "nightsL
 const STAGES: Stage[] = ["deep", "rem", "light", "awake"];
 
 /** The stage totals of a night, deep first. */
-export function stageParts(sleep: SleepVM): { stage: Stage; minutes: number }[] {
+export function stageParts(sleep: Pick<SleepVM, "stages">): { stage: Stage; minutes: number }[] {
   const rows = sleep.stages?.value?.rows ?? [];
   return STAGES.map((stage) => ({ stage, minutes: rows.find((r) => r.stage === stage)?.minutes ?? 0 }));
 }
@@ -299,6 +299,31 @@ export function LoadSmall({ strain, target, onPress }: { strain: Metric<number>;
       <View style={{ flex: 1, justifyContent: "center" }}>{v !== null && <LevelBar value={v} max={max} usual={target} color={INK.load} />}</View>
       {v === null ? <Waiting metric={strain} /> : <HeroValue value={`${Math.round(v)}%`} unit={word ?? undefined} size="edge" />}
     </PictureCard>
+  );
+}
+
+/** Strain's hero for its detail page: the day's strain in dots against the Strain Target (spec 4.4, in the load ink). */
+export function StrainHero({ strain, target, soFar }: { strain: Metric<number>; target: [number, number] | null; soFar?: boolean }) {
+  const { t } = useTranslation("glow");
+  const v = strain.value;
+  const max = Math.max(100, v ?? 0, target?.[1] ?? 0);
+  const where = v === null ? "waiting" : !target ? "noTarget" : v > target[1] ? "above" : v < target[0] ? "below" : "within";
+  return (
+    <GlowCard look={heroStyle(INK.load, 270)}>
+      <CardTitle title={t("card.load")} note={target ? t("card.loadTarget", { low: Math.round(target[0]), high: Math.round(target[1]) }) : undefined} />
+      <GText kind="sentence" numberOfLines={3} style={{ marginTop: LAYOUT.titleGap }}>
+        {t(`hero.strain.${where}`)}
+      </GText>
+      <View style={{ marginTop: 20, gap: 14 }}>
+        {v === null ? <DotText text="--" size="hero" color={WHITE.waiting} /> : <HeroValue value={`${Math.round(v)}%`} unit={soFar ? t("word.soFar") : undefined} size="hero" />}
+        {v !== null && <LevelBar value={v} max={max} usual={target} color={WHITE.primary} />}
+      </View>
+      {strain.provisional && (
+        <View style={{ marginTop: 12 }}>
+          <OutlineTag text={t("word.provisional")} />
+        </View>
+      )}
+    </GlowCard>
   );
 }
 

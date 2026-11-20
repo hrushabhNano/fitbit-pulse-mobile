@@ -8,8 +8,8 @@ vi.mock("./theme", () => ({ useTheme: () => ({}) }));
 describe("boxShadow writes what the sites wrote by hand", () => {
   it("card: the light shadow alone, the dark lit edge alone", () => {
     expect(boxShadow("light", edge(LIGHT["card-edge"]), "card")).toBe("0 1px 2px rgba(16, 21, 24, 0.05), 0 0 0 1px rgba(16, 21, 24, 0.05)");
-    expect(boxShadow("dark", edge(DARK["card-edge"]), "card")).toBe("inset 0 1px 0 rgba(255, 255, 255, 0.06)");
-    expect(boxShadow("dark", edge(DARK["card-edge"]), "card", ring("red"))).toBe("inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 0 0 1px red");
+    expect(boxShadow("dark", edge(DARK["card-edge"]), "card")).toBe("inset 0 1px 0 rgba(255, 255, 255, 0.08)");
+    expect(boxShadow("dark", edge(DARK["card-edge"]), "card", ring("red"))).toBe("inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 0 0 1px red");
   });
   it("overlay panels: ring then overlay shadow", () => {
     expect(boxShadow("light", ring(LIGHT["overlay-ring"], { inset: false }), "overlay")).toBe("0 0 0 1px rgba(16, 21, 24, 0.1), 0 8px 24px rgba(16, 21, 24, 0.14)");
