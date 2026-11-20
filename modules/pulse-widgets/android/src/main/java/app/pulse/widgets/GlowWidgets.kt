@@ -160,7 +160,7 @@ internal class GlowArt(private val context: Context) {
     if (glow == null) return waiting(kind, w, h, r, pad)
     val b = bucket(w, h)
     return when (kind) {
-      GlowKind.TODAY -> today(glow, b, w, h, r, pad, footer)
+      GlowKind.TODAY -> today(glow, b, w, h, r, pad, footer, metrics)
       GlowKind.RECOVERY -> recovery(glow.optJSONObject("recovery") ?: JSONObject(), b, w, h, r, pad, footer)
       GlowKind.SLEEP -> sleep(glow.optJSONObject("sleep") ?: JSONObject(), b, w, h, r, pad, footer)
       GlowKind.STEPS -> steps(glow.optJSONObject("steps") ?: JSONObject(), b, w, h, r, pad, footer)
@@ -196,7 +196,7 @@ internal class GlowArt(private val context: Context) {
 
   // ── Today ─────────────────────────────────────────────────────────────────
 
-  private fun today(g: JSONObject, b: Bucket, w: Float, h: Float, r: Float, pad: Float, footer: String?): Triple<Bitmap, String, String> {
+  private fun today(g: JSONObject, b: Bucket, w: Float, h: Float, r: Float, pad: Float, footer: String?, metrics: JSONArray? = null): Triple<Bitmap, String, String> {
     val hero = g.optJSONObject("hero") ?: JSONObject()
     val title = hero.optString("title")
     val sentenceText = hero.optString("sentence")
@@ -208,9 +208,15 @@ internal class GlowArt(private val context: Context) {
       drawGlow(c, look, w, h, r)
       val inner = w - pad * 2
       line(c, title, pad, pad, inner, this.title)
-      val end = bottom(h, pad, footer)
+      var end = bottom(h, pad, footer)
+      if (b == Bucket.LARGE) {
+        // 4x4: the moment above, the day's three figures (Recovery, Last night, Steps) along the bottom under a hairline.
+        val top = figures(c, tiles(g, metrics).take(3), pad, end, inner)
+        c.drawLine(pad, top - 14f, w - pad, top - 14f, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0x33FFFFFF; strokeWidth = 1f })
+        end = top - 30f
+      }
       val dot = if (b == Bucket.SMALL) 3.6f else 4.5f
-      val lines = when (b) { Bucket.SMALL -> if (value != null) 0 else 4; Bucket.WIDE -> 2; Bucket.LARGE -> 4 }
+      val lines = when (b) { Bucket.SMALL -> if (value != null) 0 else 4; Bucket.WIDE -> 2; Bucket.LARGE -> 3 }
       block(c, sentenceText, pad, pad + 30f, inner, sentence(if (b == Bucket.SMALL) 16f else 18f), lines)
       if (value != null) {
         val d = DotFont.fit(value, dot, inner * if (b == Bucket.SMALL) 1f else .7f)
@@ -451,6 +457,20 @@ internal class GlowArt(private val context: Context) {
     c.restore()
   }
 
+  /** Figures in a row: one dot size for all of them, so the titles and numbers line up. Returns the row's top. */
+  private fun figures(c: Canvas, shown: List<Tile>, x0: Float, end: Float, inner: Float): Float {
+    val cw = inner / shown.size
+    val dot = shown.minOf { DotFont.fit(it.value ?: "--", 3.6f, cw - 10f) }
+    val numH = DotFont.height(dot)
+    shown.forEachIndexed { i, t ->
+      val x = x0 + i * cw
+      line(c, t.title, x, end - numH - 34f, cw - 8f, text(sansMedium, 11.5f, 0xDBFFFFFF.toInt()))
+      DotFont.draw(c, t.value ?: "--", x, end - numH - 12f, dot, if (t.value == null) 0x4DFFFFFF else 0xFFFFFFFF.toInt())
+      t.picture(c, x, end - 6f, cw - 12f)
+    }
+    return end - numH - 34f
+  }
+
   private fun overview(g: JSONObject, metrics: JSONArray?, b: Bucket, w: Float, h: Float, r: Float, pad: Float, footer: String?): Triple<Bitmap, String, String> {
     val hero = g.optJSONObject("hero") ?: JSONObject()
     val angle = if (hero.isNull("angle")) null else hero.optDouble("angle", 270.0).toFloat()
@@ -475,20 +495,7 @@ internal class GlowArt(private val context: Context) {
         drawGlow(c, look, w, h, r)
         val inner = w - pad * 2
         line(c, hero.optString("title"), pad, pad, inner, this.title)
-        val four = all.take(4)
-        val cols = if (b == Bucket.SMALL) 2 else 4
-        val shown = four.take(if (b == Bucket.SMALL) 2 else 4)
-        val cw = inner / cols
-        val end = bottom(h, pad, footer)
-        shown.forEachIndexed { i, t ->
-          val x = pad + i * cw
-          val value = t.value ?: "--"
-          val dot = DotFont.fit(value, 3.6f, cw - 10f)
-          val numH = DotFont.height(dot)
-          line(c, t.title, x, end - numH - 34f, cw - 8f, text(sansMedium, 11.5f, 0xDBFFFFFF.toInt()))
-          DotFont.draw(c, value, x, end - numH - 12f, dot, if (t.value == null) 0x4DFFFFFF else 0xFFFFFFFF.toInt())
-          t.picture(c, x, end - 6f, cw - 12f)
-        }
+        figures(c, all.take(if (b == Bucket.SMALL) 2 else 4), pad, bottom(h, pad, footer), inner)
         footerLine(c, footer, w, h, pad)
       }
     }

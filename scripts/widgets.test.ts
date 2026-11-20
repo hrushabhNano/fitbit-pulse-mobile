@@ -1,5 +1,5 @@
 import { createRequire } from "node:module";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { DARK, LIGHT } from "../src/ui/palette";
 const require = createRequire(import.meta.url);
@@ -25,7 +25,11 @@ describe("widget native configuration", () => {
       const cls = r.$["android:name"].split(".").pop();
       expect(kotlin).toContain(`class ${cls} :`);
       const res = r["meta-data"][0].$["android:resource"].replace("@xml/", "");
-      expect(readFileSync(`modules/pulse-widgets/android/src/main/res/xml/${res}.xml`, "utf8")).toContain("targetCellWidth");
+      const info = readFileSync(`modules/pulse-widgets/android/src/main/res/xml/${res}.xml`, "utf8");
+      expect(info).toContain("targetCellWidth");
+      // The picker shows a real render: a drawn preview image, not the empty bitmap layout.
+      const preview = /android:previewImage="@drawable\/([a-z_]+)"/.exec(info)?.[1];
+      expect(preview && existsSync(`modules/pulse-widgets/android/src/main/res/drawable-nodpi/${preview}.webp`)).toBe(true);
     }
   });
   it("keeps packaged native text in sync with English translation keys", () => {

@@ -116,4 +116,6 @@ They take no configuration and open their tab.
 - Drawing: `GlowDraw.kt` (the light, the dot font) and `GlowWidgets.kt` draw one bitmap per widget in Funnel type
   (`res/font/funnel_*`). Always dark, as the app is.
 - `GlowWidgetTest` draws every widget at every size from demo snapshots (`src/test/resources/glow-snapshot-*.json`,
-  written from the demo seed); the APK workflow keeps the PNGs as the `glow-widget-previews` artifact.
+  written from the demo seed); the APK workflow attaches the PNGs to the pre-release as `glow-widget-previews.zip`.
+- Picker previews: each widget info's `android:previewImage` is that run's `preview-<name>.png`, scaled to two thirds
+  and saved as `res/drawable-nodpi/glow_preview_<name>.webp`. Refresh them when a widget's drawing changes.
