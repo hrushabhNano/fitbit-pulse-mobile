@@ -104,6 +104,11 @@ jobs:
           FILE: ${{ steps.name.outputs.file }}
         run: |
           gh release delete "$TAG" --cleanup-tag --yes || true
-          gh release create "$TAG" "$FILE" --prerelease --target "$GITHUB_SHA" \
+          previews=()
+          if [ -d modules/pulse-widgets/android/build/widget-previews ] && ls modules/pulse-widgets/android/build/widget-previews/glow-*.png >/dev/null 2>&1; then
+            (cd modules/pulse-widgets/android/build/widget-previews && zip -q "$GITHUB_WORKSPACE/glow-widget-previews.zip" glow-*.png)
+            previews=(glow-widget-previews.zip)
+          fi
+          gh release create "$TAG" "$FILE" "${previews[@]}" --prerelease --target "$GITHUB_SHA" \
             --title "Preview: ${GITHUB_REF_NAME}" \
             --notes "Built from ${GITHUB_SHA::7} on ${GITHUB_REF_NAME}. Tap the .apk below on your phone to install (arm64)."
