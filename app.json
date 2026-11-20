@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Pulse",
+    "name": "Pulse Glow",
     "slug": "pulse",
     "platforms": [
       "android"
@@ -17,7 +17,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": true,
-      "package": "in.portlabs.pulse",
+      "package": "com.hrushabhnano.pulse",
       "permissions": [
         "android.permission.health.READ_STEPS",
         "android.permission.health.READ_DISTANCE",

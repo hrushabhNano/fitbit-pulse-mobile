@@ -1,5 +1,10 @@
 # Releasing APKs
 
+**This fork:** every push to a branch builds an arm64 APK on GitHub Actions (`.github/workflows/apk.yml`) and publishes
+it as the pre-release `preview-<branch>`; open it on the phone and tap the APK. The fork's APK is `com.hrushabhnano.pulse`
+("Pulse Glow"), so it installs beside upstream Pulse rather than over it, and its update notice reads this fork's
+releases. The rest of this page is upstream's EAS process.
+
 APKs go to GitHub Releases, never into the repository. Each APK holds one CPU architecture, which keeps it near 29 MB.
 
 | Profile | Architecture | Phones |

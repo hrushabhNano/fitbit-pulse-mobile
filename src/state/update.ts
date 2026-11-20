@@ -12,8 +12,8 @@ import { apkFor, isNewer, parseRelease, type Release } from "@/lib/release";
 import { report } from "@/lib/telemetry";
 import { APP_VERSION } from "@/queries/settings";
 
-/** GitHub's latest-release endpoint for Pulse's repository. */
-export const RELEASES_URL = "https://api.github.com/repos/adityaongit/pulse-mobile/releases/latest";
+/** GitHub's latest-release endpoint for this fork (its APKs carry its own package and key, so upstream's can't install over it). */
+export const RELEASES_URL = "https://api.github.com/repos/hrushabhNano/fitbit-pulse-mobile/releases/latest";
 
 const CHECK_EVERY_MS = 24 * 60 * 60 * 1000;
 const TIMEOUT_MS = 15_000;
