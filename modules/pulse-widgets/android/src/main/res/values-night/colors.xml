@@ -8,13 +8,13 @@
   <color name="pulse_widget_fg">#ffffff</color>
   <color name="pulse_widget_secondary">#babac0</color>
   <color name="pulse_widget_muted">#a9aeb3</color>
-  <color name="pulse_widget_track">#33383c</color>
+  <color name="pulse_widget_track">#26262a</color>
   <color name="pulse_widget_warning_text">#ffa722</color>
-  <color name="pulse_widget_green">#16ec06</color>
+  <color name="pulse_widget_green">#7cf2c9</color>
   <color name="pulse_widget_yellow">#ffde00</color>
   <color name="pulse_widget_red">#ff0026</color>
-  <color name="pulse_widget_strain">#0093e7</color>
-  <color name="pulse_widget_sleep">#7ba1bb</color>
+  <color name="pulse_widget_strain">#a78bfa</color>
+  <color name="pulse_widget_sleep">#8fa8ff</color>
   <color name="pulse_widget_optimal">#00f19f</color>
   <color name="pulse_widget_warning">#ffa722</color>
   <color name="pulse_widget_blue">#67aee6</color>

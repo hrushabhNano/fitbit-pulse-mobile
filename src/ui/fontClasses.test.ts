@@ -8,7 +8,7 @@ describe("readFont", () => {
     const r = readFont("font-numeric text-xl font-bold leading-6", base);
     expect(r.face).toEqual({ family: "numeric", weight: "bold" });
     expect(r.rest).toBe("text-xl leading-6");
-    expect(FACES[r.face.family][r.face.weight]).toBe("FunnelDisplay-SemiBold");
+    expect(FACES[r.face.family][r.face.weight]).toBe("FunnelDisplay-Medium");
   });
   it("inherits what it does not name", () => {
     expect(readFont("text-[13px] font-semibold", { family: "numeric", weight: "bold" }).face).toEqual({ family: "numeric", weight: "semibold" });
@@ -24,8 +24,12 @@ describe("readFont", () => {
     expect(readFont("text-sm whitespace-nowrap", base)).toMatchObject({ shrink: 0, rest: "text-sm" });
     for (const c of ["shrink-0", "shrink", "flex-1", "min-w-0 flex-1", "flex-none"]) expect(readFont(c, base).shrink).toBeUndefined();
   });
-  it("maps the numerals' regular to Funnel Display's 500 face", () => {
-    expect(FACES.numeric.regular).toBe("FunnelDisplay-Medium");
+  it("maps the numerals' regular to Funnel Display's 400 face", () => {
+    expect(FACES.numeric.regular).toBe("FunnelDisplay-Regular");
+  });
+  it("drops capitals and letter spacing: the glow design sets the copy as written", () => {
+    expect(readFont("text-xs font-bold uppercase leading-4 tracking-[0.1em]", base).rest).toBe("text-xs leading-4");
+    expect(readFont("md:tracking-wide text-sm", base).rest).toBe("text-sm");
   });
 });
 

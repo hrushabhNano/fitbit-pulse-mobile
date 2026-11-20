@@ -7,7 +7,7 @@ import { ChevronRight } from "lucide-react-native";
 import { BAND_WORD, DATA_COLORS, dialColor, recoveryBand, STRESS_COLOR, STRESS_WORD, stressLevel, type DataColor } from "@/lib/bands";
 import { dialAriaLabel, formatValue, type FormatKey, unitLabel } from "@/lib/format";
 import { reasonCopy, type MetricTag, type ReasonCode } from "@/lib/reasons";
-import { Wordmark } from "../brand";
+import { DotText } from "@/glow/DotText";
 import { arcPath, polar } from "../charts/geometry";
 import { cn } from "../cn";
 import { Icon } from "../Icon";
@@ -65,7 +65,8 @@ const SIZE = {
   // Home row: an 88 px ring 6 px thick inside the 92 px box, the reference app's size at 390 (spec §11 F2).
   md: { d: 92, ring: 6, value: 34, tracking: -0.01 },
   // v2 hero ring: a 252 px ring 17 px thick at 390, measured on the reference app's recovery and strain screens (spec §11 F11).
-  lg: { d: 256, ring: 17, value: 31, tracking: -0.01 },
+  // The glow design's arc gauge: a thinner ring (13 dp in unstrap's spec 2.7) around the number in dots.
+  lg: { d: 256, ring: 13, value: 31, tracking: -0.01 },
 } as const;
 const COMPACT = { d: 64, ring: 5, value: 40, tracking: 0 } as const;
 const INSET = 2;
@@ -210,12 +211,6 @@ export function ScoreDial(props: ScoreDialProps) {
 
       {/* The hole: the square inside the stroke. One centred column whose type and gaps scale with the inner diameter. */}
       <View pointerEvents="none" className="absolute items-center justify-center" style={{ left: holeInset, right: holeInset, top: holeInset, bottom: holeInset }}>
-        {lg && (!empty || loading) && !gauge && (
-          // The wordmark over the value (brand.md: never "PULSE" in a font); never under the brand minimum (h 15 px).
-          <View style={{ marginBottom: 10 * cqi }}>
-            <Wordmark height={Math.max(15, 6.8 * cqi)} tone="foreground-secondary" />
-          </View>
-        )}
         {loading ? (
           size !== "sm" && (
             <View style={{ width: valueSize * (lg ? 1.4 : 1.2) }}>
@@ -224,6 +219,9 @@ export function ScoreDial(props: ScoreDialProps) {
           )
         ) : lg && empty && reason?.code !== "no_data" ? (
           <ReasonCentre code={reason!.code} text={reason!.short} cqi={cqi} />
+        ) : !empty && !compact && size !== "sm" ? (
+          // The glow design's numbers are dots (unstrap spec 2.3): the detail header's 6 dp, Home's row size.
+          <DotText text={`${r.text}${r.unit === "%" ? "%" : ""}`} size={lg ? "detail" : "row"} maxWidth={(d - 2 * holeInset) * 0.86} />
         ) : (
           <Text
             className={cn("font-numeric font-bold tabular-nums", empty && "text-muted-foreground", compact && gauge && r.word?.className)}

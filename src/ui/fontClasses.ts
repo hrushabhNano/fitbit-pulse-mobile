@@ -9,9 +9,11 @@ export type Face = { family: Family; weight: Weight };
 
 // The glow design's faces (src/glow/fonts.ts): Funnel Sans for text, Funnel Display for numerals. Funnel Display stops
 // at SemiBold here, so its bold is the SemiBold face.
+// Weights sit a step lighter than the web's, as the glow design sets type (Sans 500 for titles, Display 400 for
+// numbers): bold reads as SemiBold, semibold as Medium.
 export const FACES: Record<Family, Record<Weight, string>> = {
-  sans: { regular: "FunnelSans-Regular", medium: "FunnelSans-Medium", semibold: "FunnelSans-SemiBold", bold: "FunnelSans-Bold" },
-  numeric: { regular: "FunnelDisplay-Medium", medium: "FunnelDisplay-Medium", semibold: "FunnelDisplay-SemiBold", bold: "FunnelDisplay-SemiBold" },
+  sans: { regular: "FunnelSans-Regular", medium: "FunnelSans-Medium", semibold: "FunnelSans-Medium", bold: "FunnelSans-SemiBold" },
+  numeric: { regular: "FunnelDisplay-Regular", medium: "FunnelDisplay-Regular", semibold: "FunnelDisplay-Medium", bold: "FunnelDisplay-Medium" },
 };
 const WEIGHT_CLASS: Record<string, Weight> = { "font-normal": "regular", "font-medium": "medium", "font-semibold": "semibold", "font-bold": "bold" };
 const FAMILY_CLASS: Record<string, Family> = { "font-sans": "sans", "font-numeric": "numeric" };
@@ -31,6 +33,8 @@ export function readFont(className: string | undefined, inherited: Face): { face
     else if (token === "truncate") lines = 1;
     else if (/^line-clamp-\d+$/.test(token)) lines = Number(token.slice(11));
     else if (token === "whitespace-nowrap") nowrap = true;
+    // The glow design sets no text in capitals and spaces no letters out (unstrap spec 2.3): the copy's own case shows.
+    else if (token === "uppercase" || /^(?:[a-z-]+:)*tracking-/.test(token)) continue;
     else rest.push(token);
   }
   return { face: { family, weight }, rest: rest.join(" "), lines, shrink: shrinkOf(rest, nowrap) };

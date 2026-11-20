@@ -71,7 +71,7 @@ describe("colour helpers", () => {
     expect(mix("#0093e7", "#ffffff", 0.78)).toBe("#38abec");
   });
   it("resolves var() and the two inline color-mix shapes", () => {
-    expect(resolveCss("var(--recovery-green)", DARK)).toBe("#16ec06");
+    expect(resolveCss("var(--recovery-green)", DARK)).toBe("#7cf2c9");
     expect(resolveCss("color-mix(in srgb, var(--foreground) 5%, transparent)", DARK)).toBe("rgba(255, 255, 255, 0.05)");
     expect(resolveCss("color-mix(in srgb, var(--warning) 16%, var(--card))", DARK)).toBe(mix(DARK.warning, DARK.card, 0.16));
     expect(resolveCss("#abc", DARK)).toBe("#abc");
