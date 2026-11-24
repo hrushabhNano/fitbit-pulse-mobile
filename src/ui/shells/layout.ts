@@ -6,7 +6,7 @@ export const TAB_BAR_HEIGHT = 62;
 export const FAB_SIZE = TAB_BAR_HEIGHT;
 
 /** The tab roots: the bar shows here, with the check-in action beside it. */
-export const TAB_ROOTS = ["/", "/tab-recovery", "/tab-sleep", "/tab-activity"];
+export const TAB_ROOTS = ["/", "/health", "/journal", "/more"];
 
 /** How far above the bottom edge the floating bar (and the lone action on detail screens) sits: the safe area less 6 px, never under 12. */
 export function useTabBarBottom() {

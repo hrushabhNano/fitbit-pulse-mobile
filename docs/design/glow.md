@@ -23,18 +23,24 @@ unstrap is MIT or Apache-2.0 (its MIT licence is kept at `src/glow/LICENSE-unstr
 
 ```mermaid
 flowchart LR
-  T["app/(tabs)"] --> Today["index: TodayScreen"]
-  T --> R["tab-recovery: RecoveryTab"]
-  T --> S["tab-sleep: SleepTab"]
-  T --> A["tab-activity: ActivityTab"]
-  Today & R & S & A -->|"cards open"| D["/recovery, /sleep, /strain, /health/*, /chart"]
-  Avatar["avatar"] --> You["/you"] --> H["/health, /journal, /more, /trends, /goals, /coach"]
+  T["app/(tabs)"] --> Home["index: TodayScreen"]
+  T --> H["health: HealthScreen"]
+  T --> J["journal"]
+  T --> M["more: MoreScreen"]
+  Home --> Hero["the moment's glow cards"] & P["PulseHomeSections: live heart rate, Monitor, Stress, My Day, My Dashboard"]
+  Home & H & J & M -->|"cards open"| D["/recovery, /sleep, /strain, /health/*, /journal/*, /reports, /trends, /chart ..."]
+  Avatar["avatar"] --> S["/settings"]
+  Bar["tab bar"] --> C["round action: /checkin or /coach"]
 ```
 
+- Pulse's whole app stays: the four tabs (Home, Health, Journal, More), every page and every number, drawn in the glow
+  design. Home opens on the time-of-day hero and then shows everything Pulse's Home did (`PulseHomeSections` in
+  `src/screens/home/HomeScreen.tsx`). The Recovery, Sleep and Activity tab pages in `src/glow/tabs/` are no longer routed;
+  their parts (the Last night hero) serve the detail pages.
 - `src/glow/` is UI only. It reads the existing view models (`src/queries`) and changes nothing in `src/core`,
   `src/pipeline`, `src/health` or `src/data`, so engine fixes from upstream merge cleanly.
-- The full pages (`/recovery`, `/sleep`, `/strain`, the Health pages, Journal, More) are the upstream screens in the new
-  type and blacks. Restyling them card by card is the next step.
+- Where the glow rules and Pulse's density meet, Pulse's content wins: a card may carry more than one number, and the
+  extra ones are Funnel text, not dots. One dotted number per card and at most one hero glow per screen still hold.
 
 ## The mark
 

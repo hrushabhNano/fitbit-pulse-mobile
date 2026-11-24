@@ -8,7 +8,9 @@ import { SampleCard } from "./SampleCard";
 import { UpdateCard } from "./UpdateCard";
 import { useShellSync } from "./ShellStatus";
 import { SyncStatus } from "./SyncStatus";
-import { HEADER_ROW, TitleHeader, useHeaderHeight } from "./Header";
+import { GLOW_HEADER_ROW, HEADER_ROW, TitleHeader, useHeaderHeight } from "./Header";
+import { usePathname } from "expo-router";
+import { isTabRoot } from "../navigate";
 import { ScreenScroll, type ScreenScrollProps, useCollapse } from "./ScreenScroll";
 import { useBodyShown } from "./useScreenReady";
 
@@ -53,7 +55,9 @@ export type PageShellProps = {
 export function PageShell({ title, dateSwitcher, actions, layout = "stack", slots, rings, headerRight, loading, onRefresh, children }: PageShellProps) {
   const { scrollY, threshold, onScroll, progress } = useCollapse();
   const home = layout === "home";
-  const top = useHeaderHeight(HEADER_ROW + (dateSwitcher && !home ? 40 : 0));
+  // A tab root's glow header is one 60 px row (the day sits in it); a page over a tab keeps the title row and date pill.
+  const root = isTabRoot(usePathname());
+  const top = useHeaderHeight(home ? HEADER_ROW : root ? GLOW_HEADER_ROW : HEADER_ROW + (dateSwitcher ? 40 : 0));
   const base = useHeaderHeight(HEADER_ROW);
   const mark = useCallback(
     (node: View) =>

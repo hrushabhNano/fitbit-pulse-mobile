@@ -86,13 +86,13 @@ const noBandInfo = () => ({
 const go = (href: string) => push(href);
 
 /** halo's Home with My Dashboard from Pulse's catalogue (src/queries/homeExtras.ts) and the stress tile's line. */
-type HomePageVM = Omit<HomeVM, "dashboard"> & { dashboard: { empty: HomeDashboard["empty"] }; stressChart: HomeDashboard["stressChart"] };
-const homeQuery = (d: string) => async (ctx: QueryCtx): Promise<HomePageVM> => {
+export type HomePageVM = Omit<HomeVM, "dashboard"> & { dashboard: { empty: HomeDashboard["empty"] }; stressChart: HomeDashboard["stressChart"] };
+export const homeQuery = (d: string) => async (ctx: QueryCtx): Promise<HomePageVM> => {
   const chosen = await dashboardChoice();
   const [vm, dash] = await Promise.all([getHome(d, ctx), getHomeDashboard(d, ctx, chosen)]);
   return { ...vm, keyStats: dash.keyStats, dashboard: { empty: dash.empty }, stressChart: dash.stressChart };
 };
-const homeKey = (d: string) => ["home", d] as const;
+export const homeKey = (d: string) => ["home", d] as const;
 
 export function HomeScreen() {
   const [d] = useSelectedDay();
@@ -284,6 +284,116 @@ function Home({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
         ),
       }}
     />
+  );
+}
+
+/**
+ * Pulse's Home below the dials, for the glow Home (src/glow/today/TodayScreen.tsx) to show under its time-of-day hero:
+ * live heart rate, Monitor and Stress, insights, My Day (activities, tonight, journal, energy) and My Dashboard.
+ */
+export function PulseHomeSections({ vm, timeZone }: { vm: HomePageVM; timeZone: string }) {
+  const d = vm.day;
+  const { today } = vm;
+  const at = (href: string) => dayHref(href, d, today);
+  const { c } = useTheme();
+  const { t } = useTranslation("home");
+  const dashboardKeysShown = useMemo(() => vm.keyStats.map((s) => s.key).filter(isDashboardKey), [vm.keyStats]);
+  const imported = useMemo(() => vm.activities.items.flatMap((it) => (it.kind === "activity" ? [{ id: it.id, start: it.start, end: it.end }] : [])), [vm.activities.items]);
+  const recorded = useRecordedRows(d, timeZone, imported);
+  return (
+    <View className="gap-8 pt-5">
+      <FirstSync />
+      <View className="gap-8">
+        <View className="-mt-2 gap-6">
+          {vm.isToday && <HeartRateTile phoneOnly={!!vm.phone} />}
+          {vm.phone ? (
+            <PhoneActivity stats={vm.phone} link={{ d, today }} />
+          ) : (
+            <View className="flex-row gap-3">
+              <View className="min-w-0 flex-1 flex-row"><MonitorCard vm={vm} href={at("/health/monitor")} /></View>
+              <View className="min-w-0 flex-1 flex-row"><StressCard vm={vm} href={at("/health/stress")} timeZone={timeZone} /></View>
+            </View>
+          )}
+          {vm.insights.length > 0 && <HomeInsight day={d} items={vm.insights} />}
+          {vm.monitorAlert && <MonitorAlert alert={vm.monitorAlert} href={at("/health/monitor")} />}
+        </View>
+        <SectionShell variant="section" title={t("section.myDay")} action={<PlusKey label={vm.isToday ? t("add.today") : t("add.day", { day: formatDay(d, DAY.short) })} />}>
+          <View className="gap-3">
+            {vm.outlook && <DayBanner outlook={vm.outlook} />}
+            <SectionShell variant="card" title={vm.activities.title} info={vm.isToday ? false : cardInfo("Activities")} action={<IconLink href="/activities" label={t("activities.all")} icon={Maximize2} />}>
+              {vm.activities.items.length || vm.activities.detected.length || recorded.length ? (
+                <View className="gap-1.5">
+                  {/* Imported and recorded activities in one list, newest first, as the import orders its own. */}
+                  {[
+                    ...vm.activities.items.map((it) => ({ start: it.start, key: it.id, node:
+                      it.kind === "activity" ? (
+                        <ActivityCard key={it.id} name={it.name} kind={it.activityKind} strain={it.strain} start={it.start} end={it.end} distanceKm={it.distanceKm} paceS={it.paceS} href={activityHref(it.id)} timeZone={timeZone} />
+                      ) : (
+                        <SleepCard key={it.id} kind={it.kind} minutes={it.minutes} start={it.start} end={it.end} href={it.kind === "nap" ? napHref(it.id) : at("/sleep")} timeZone={timeZone} />
+                      ) })),
+                    ...recorded.map((row) => ({ start: row.start, key: row.session.id, node: <RecordedActivityCard key={row.session.id} row={row} timeZone={timeZone} /> })),
+                  ].sort((a, b) => b.start - a.start).map((row) => row.node)}
+                  {vm.activities.detected.map((it) => <DetectedRow key={`detected-${it.start}`} item={it} timeZone={timeZone} />)}
+                </View>
+              ) : (
+                <EmptyState body={vm.isToday ? t("activities.emptyToday") : t("activities.emptyDay")} />
+              )}
+              {/* Add explains importing from Google; Start records one live on the phone (WHOOP's pair of buttons). */}
+              <View className="mt-3 flex-row gap-3">
+                <View className="min-w-0 flex-1">
+                  <InfoCardTrigger info={ADD_ACTIVITY_INFO} activeScale={0.96} className={vm.isToday ? `${CARD_BUTTON} px-3` : CARD_BUTTON}>
+                    <CardButtonContent icon={Plus} label={t("activities.add")} compact={vm.isToday} />
+                  </InfoCardTrigger>
+                </View>
+                {vm.isToday && <StartActivityButton />}
+              </View>
+            </SectionShell>
+            {vm.isToday && (
+              <SectionShell variant="card" title={t("section.tonight")} info={TONIGHT_INFO} fill action={<IconLink href={at("/sleep?section=planner")} label={t("tonight.openPlanner")} icon={ChevronRight} />}>
+                <MetricState
+                  metric={vm.tonight}
+                  skeleton={null}
+                  renderReason={(r, meta) => (
+                    <View className="my-auto">
+                      <ReasonPlaceholder reason={r} nightsLeft={meta.nightsLeft} size="md" copy={r === "calibrating" ? t("noBand.plannerNeeds") : undefined} />
+                    </View>
+                  )}
+                >
+                  {(plan) => <TonightPlan plan={plan} timeZone={timeZone} />}
+                </MetricState>
+              </SectionShell>
+            )}
+            <JournalWeek vm={vm} at={at} />
+            <EnergyCard vm={vm} timeZone={timeZone} />
+          </View>
+        </SectionShell>
+      </View>
+      <SectionShell
+        variant="section"
+        title={t("section.myDashboard")}
+        action={<EditDashboardButton keys={dashboardKeysShown} empty={vm.dashboard.empty} />}
+      >
+        <View accessibilityRole="list" className="gap-2">
+          {vm.keyStats.map((s) =>
+            s.key === "stress" ? <StressTile key={s.key} vm={vm} href={at("/health/stress")} timeZone={timeZone} /> : <KeyStatRow key={s.key} variant="card" {...statProps(s, { d, today })} />,
+          )}
+        </View>
+        {/* One point cannot show a trend. */}
+        {vm.strainRecovery.filter((p) => p.strain !== null || p.recovery !== null).length >= 2 && (
+          <SectionShell variant="card" title={t("section.strainRecovery")} info={STRAIN_RECOVERY_INFO} fill className="mt-3">
+            <StrainRecoveryChart points={vm.strainRecovery} today={d} />
+          </SectionShell>
+        )}
+      </SectionShell>
+      {vm.weeklyTeaser && (
+        <GradientBanner from={c["banner-from"]} to={c["banner-to"]} role="link" onPress={() => go(`/reports/${vm.weeklyTeaser!.period}`)}>
+          <Icon icon={CalendarRange} size={22} tone="foreground" strokeWidth={1.5} />
+          <Text className="min-w-0 flex-1 text-base font-semibold leading-[22px]">{t("section.weekReview")}</Text>
+          <Text className="font-numeric text-xs font-medium leading-4 tabular-nums text-foreground-secondary">{rangeLabel(vm.weeklyTeaser.start, vm.weeklyTeaser.end)}</Text>
+          <Icon icon={ChevronRight} size={20} tone="foreground-secondary" strokeWidth={1.75} />
+        </GradientBanner>
+      )}
+    </View>
   );
 }
 

@@ -25,6 +25,6 @@ describe("push", () => {
 });
 
 it("closes stacked details before opening an external tab link", () => {
-  openLink("/tab-activity?source=shortcut");
-  expect(linked).toEqual(["dismiss", "/tab-activity?source=shortcut"]);
+  openLink("/health?source=shortcut");
+  expect(linked).toEqual(["dismiss", "/health?source=shortcut"]);
 });

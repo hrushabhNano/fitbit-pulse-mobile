@@ -1,5 +1,9 @@
 {
   "tabs": {
+    "home": "Home",
+    "health": "Health",
+    "journal": "Journal",
+    "more": "More",
     "today": "Today",
     "recovery": "Recovery",
     "sleep": "Sleep",
@@ -19,7 +23,8 @@
       "error": "Sync failed",
       "ago": "{{time}} ago",
       "open": "Data source and sync"
-    }
+    },
+    "openSettings": "Open settings"
   },
   "moment": {
     "waking": "Waking up",

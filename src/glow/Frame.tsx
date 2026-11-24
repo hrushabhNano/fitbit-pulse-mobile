@@ -8,7 +8,15 @@ import { useTranslation } from "react-i18next";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { Tabs } from "expo-router";
-import { Footprints, HeartPulse, House, Moon, User, type LucideIcon } from "lucide-react-native";
+import { HeartPulse, Menu, NotebookPen, User, type LucideIcon } from "lucide-react-native";
+import Svg, { Circle } from "react-native-svg";
+import { useGlobalSearchParams } from "expo-router";
+import { i18n } from "@/i18n/config";
+import { useHasCoachKey } from "@/coach/session";
+import { dayLabel } from "@/lib/format";
+import { parseDay } from "@/lib/url";
+import { HomeChart } from "@/ui/icons";
+import { markDots, markHeight } from "./mark";
 import { CalendarPanel } from "@/ui/shells/CalendarPanel";
 import { useSelectedDay } from "@/ui/shells/DateSwitcher";
 import { useShellCalendar, useShellSync } from "@/ui/shells/ShellStatus";
@@ -24,12 +32,12 @@ import { GText } from "./Parts";
 import { MoodProvider } from "./mood";
 import { INK, LAYOUT, SURFACE, WHITE, type Mood } from "./tokens";
 
-/** The tabs (spec 3.2): Today, Recovery, Sleep, Activity, each with its section colour. */
-export const GLOW_TABS: { route: string; key: "today" | "recovery" | "sleep" | "activity"; icon: LucideIcon; tint: string; calendar: string }[] = [
-  { route: "index", key: "today", icon: House, tint: "#FFFFFF", calendar: "/" },
-  { route: "tab-recovery", key: "recovery", icon: HeartPulse, tint: INK.recovery, calendar: "/recovery" },
-  { route: "tab-sleep", key: "sleep", icon: Moon, tint: INK.sleepLight, calendar: "/sleep" },
-  { route: "tab-activity", key: "activity", icon: Footprints, tint: INK.steps, calendar: "/strain" },
+/** The tabs: Pulse's Home, Health, Journal and More, each with its section colour for the active capsule. */
+export const GLOW_TABS: { route: string; key: "home" | "health" | "journal" | "more"; icon: LucideIcon; tint: string; calendar: string }[] = [
+  { route: "index", key: "home", icon: HomeChart, tint: "#FFFFFF", calendar: "/" },
+  { route: "health", key: "health", icon: HeartPulse, tint: INK.heart, calendar: "/health" },
+  { route: "journal", key: "journal", icon: NotebookPen, tint: INK.evening, calendar: "/journal" },
+  { route: "more", key: "more", icon: Menu, tint: "#FFFFFF", calendar: "/" },
 ];
 
 const minutesAgo = (t: number | null) => (t === null ? null : Math.max(0, Math.round((Date.now() - t) / 60_000)));
@@ -78,7 +86,7 @@ function SyncChip() {
  * The header on every tab (spec 3.1): the avatar opens You, the moment or tab name over the day sits in the middle (swipe
  * it to change day, tap it for the calendar, yesterday peeking in dimmed), the sync chip on the right.
  */
-export function MomentHeader({ title, calendarPath }: { title: string; calendarPath: string }) {
+export function MomentHeader({ title, calendarPath, dated = true }: { title: string; calendarPath: string; /** false: the title alone, no day to change (Health, More). */ dated?: boolean }) {
   const { t } = useTranslation("glow");
   const [d, setDay] = useSelectedDay();
   const { today, firstDay } = useShellCalendar();
@@ -103,8 +111,8 @@ export function MomentHeader({ title, calendarPath }: { title: string; calendarP
       <Press
         activeScale={0.94}
         accessibilityRole="button"
-        accessibilityLabel={t("header.openYou")}
-        onPress={() => push("/you")}
+        accessibilityLabel={t("header.openSettings")}
+        onPress={() => push("/settings")}
         style={{
           width: LAYOUT.round,
           height: LAYOUT.round,
@@ -116,6 +124,13 @@ export function MomentHeader({ title, calendarPath }: { title: string; calendarP
       >
         <User size={20} color={WHITE.secondary} strokeWidth={1.5} />
       </Press>
+      {!dated ? (
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+          <GText kind="headerDate" accessibilityRole="header" numberOfLines={1}>
+            {title}
+          </GText>
+        </View>
+      ) : (
       <GestureDetector gesture={pan}>
         <View style={{ flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
           {canPrev && (
@@ -145,6 +160,7 @@ export function MomentHeader({ title, calendarPath }: { title: string; calendarP
           </Press>
         </View>
       </GestureDetector>
+      )}
       <SyncChip />
       <CalendarPanel
         open={open}
@@ -217,6 +233,7 @@ export function GlowTabBar({ state, navigation }: TabBarProps) {
         <View pointerEvents="box-none" style={{ alignSelf: "stretch" }}>
           <LiveWorkoutBar />
         </View>
+        <View pointerEvents="box-none" style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
         <View
           accessibilityRole="tablist"
           accessibilityLabel={t("tabs.label")}
@@ -252,7 +269,7 @@ export function GlowTabBar({ state, navigation }: TabBarProps) {
                   }
                 }}
                 style={{
-                  width: 80,
+                  width: 64,
                   borderRadius: (LAYOUT.tabBarHeight - 10) / 2,
                   alignItems: "center",
                   justifyContent: "center",
@@ -268,8 +285,57 @@ export function GlowTabBar({ state, navigation }: TabBarProps) {
             );
           })}
         </View>
+        <GlowCheckIn />
+        </View>
       </View>
     </View>
+  );
+}
+
+/** The heartbeat mark (src/glow/mark.ts) in white, `width` wide. */
+export function GlowMark({ width, color = "#FFFFFF" }: { width: number; color?: string }) {
+  const dots = markDots(width);
+  return (
+    <Svg width={width} height={markHeight(width)} accessibilityElementsHidden>
+      {dots.map((d) => (
+        <Circle key={`${d.x},${d.y}`} cx={d.x} cy={d.y} r={d.r} fill={color} />
+      ))}
+    </Svg>
+  );
+}
+
+/**
+ * Pulse's round action beside the tabs: it opens the check-in for the day on screen (`/checkin?d=`), or the coach once
+ * a coach key is saved, as Pulse's did. Drawn as the app's mark on the sheet surface.
+ */
+function GlowCheckIn() {
+  const { today } = useShellCalendar();
+  const { d: raw } = useGlobalSearchParams<{ d?: string }>();
+  const { d } = parseDay(raw, today);
+  const coach = useHasCoachKey();
+  const label = coach ? "Coach" : i18n.t("ui:checkIn.forDay", { day: dayLabel(d, today) });
+  return (
+    <Press
+      activeScale={0.94}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={() => {
+        haptic.tap();
+        push(coach ? "/coach" : `/checkin?d=${d}`);
+      }}
+      style={{
+        width: LAYOUT.tabBarHeight,
+        height: LAYOUT.tabBarHeight,
+        borderRadius: LAYOUT.tabBarHeight / 2,
+        backgroundColor: SURFACE.sheet,
+        borderWidth: 1,
+        borderColor: WHITE.hairline,
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <GlowMark width={30} />
+    </Press>
   );
 }
 

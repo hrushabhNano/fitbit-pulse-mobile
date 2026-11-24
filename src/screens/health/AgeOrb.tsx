@@ -20,6 +20,8 @@ import { useTheme } from "@/ui/theme";
 import { EASE } from "@/ui/motion";
 import { haptic } from "@/ui/haptics";
 import { ageDelta } from "./format";
+import { DotText } from "@/glow/DotText";
+import { WHITE } from "@/glow/tokens";
 import { blobRadius, mixRGB, ORB, orbColors, particleCount, particleLayer, rgba, rng, shadeRGB, swirlVelocity, type RGB, type Token } from "./orb";
 
 export type AgeOrbProps = {
@@ -531,7 +533,6 @@ export function AgeOrb({ age, deltaYears, provisional = false, size: sizeProp, r
   // The web's `motion-safe:` entry: with reduced motion the text just appears.
   const entering = (delay: number) => (compact || reduced ? undefined : enter(delay));
   // The web writes `leading-none` before `text-[calc(..)]`; tailwind-merge drops the leading, so the numeral takes the page's 1.5 line height.
-  const numeral = small ? size * 0.25 : 18 + size * 0.07;
   const caption = small ? Math.max(9, size * 0.09) : 7 + size * 0.023;
   const deltaSize = 8 + size * 0.024;
   const deltaColor = delta !== null && delta <= ORB.greenText ? c["optimal-text"] : same ? c["orb-text-muted"] : c[ORB.deltaText as TokenName];
@@ -541,18 +542,17 @@ export function AgeOrb({ age, deltaYears, provisional = false, size: sizeProp, r
       <OrbLayers delta={delta} size={size} compact={compact} />
       <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" className="size-full items-center justify-center" style={{ paddingHorizontal: size * 0.14 }}>
         <Animated.View entering={entering(200)}>
-          <Text className="text-center font-numeric font-bold tabular-nums" style={{ fontSize: numeral, lineHeight: numeral * 1.5, letterSpacing: -0.01 * numeral, color: has ? c["orb-text"] : c["orb-text-muted"] }}>
-            {formatValue("decimal1", has ? age : null)}
-          </Text>
+          {/* The glow design's number: dots (src/glow/DotText), the detail size in the hero orb, the edge size small. */}
+          <DotText text={formatValue("decimal1", has ? age : null)} size={small ? "edge" : "detail"} color={has ? "#FFFFFF" : WHITE.waiting} maxWidth={size * 0.62} />
         </Animated.View>
         <Animated.View entering={entering(300)} style={{ marginTop: small ? 2 : 6 }}>
-          <Text className="text-center font-bold uppercase" style={{ fontSize: caption, lineHeight: small ? caption : caption * 1.25, letterSpacing: 0.1 * caption, color: c["orb-text-muted"] }}>
+          <Text className="text-center font-medium" style={{ fontSize: small ? caption : 15, lineHeight: small ? caption : 20, color: WHITE.secondary }}>
             {AGE_LABEL}
           </Text>
         </Animated.View>
         {!small && d && (
           <Animated.View entering={entering(400)} style={{ marginTop: 10 }}>
-            <Text className="text-center font-semibold tabular-nums" style={{ fontSize: deltaSize, lineHeight: deltaSize * 1.25, color: deltaColor }}>
+            <Text className="text-center font-medium tabular-nums" style={{ fontSize: Math.max(15, deltaSize), lineHeight: Math.max(15, deltaSize) * 1.3, color: deltaColor }}>
               {d.text}
             </Text>
           </Animated.View>

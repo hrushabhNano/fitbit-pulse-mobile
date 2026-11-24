@@ -3,13 +3,15 @@ import { StyleSheet, View } from "react-native";
 import { LinearGradient as NativeGradient } from "expo-linear-gradient";
 import Animated, { useAnimatedStyle, type DerivedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { MomentHeader } from "@/glow/Frame";
 import { cn } from "../cn";
 import { alpha } from "../color";
 import { Ground, groundColorAt, HealthspanGround } from "../Ground";
 import { Text } from "../Text";
 import { useTheme } from "../theme";
 import { DateSwitcher, type DateSwitcherProps } from "./DateSwitcher";
-import { router } from "expo-router";
+import { router, usePathname } from "expo-router";
+import { isTabRoot } from "../navigate";
 import { ChevronLeft } from "lucide-react-native";
 import { i18n } from "@/i18n/config";
 import { Icon } from "../Icon";
@@ -94,20 +96,34 @@ export function HeaderRow({ left, center, right, className, tall }: { left?: Rea
 
 /** Health, Journal and More (spec §4.3 "Other tab roots"): centred title, optional right slot (sync status), optional date pill under it. */
 export function TitleHeader({ title, dateSwitcher, right }: { title: string; dateSwitcher?: DateSwitcherProps; right?: ReactNode }) {
-  // Health, Journal and More open from You over the glow tabs (src/glow), so they carry a way back.
-  const back = router.canGoBack() ? (
-    <Press activeBg="bg-fill-hover" accessibilityRole="button" accessibilityLabel={i18n.t("common:actions.back")} onPress={() => router.back()} className="size-11 items-center justify-center rounded-full">
-      <Icon icon={ChevronLeft} size={26} tone="foreground" strokeWidth={1.75} />
-    </Press>
-  ) : undefined;
+  // A page opened over a tab keeps Pulse's centred title with a way back. A tab root (Health, Journal, More) takes the
+  // glow header: the avatar, the title (over the day on a dated page, swipe to change day), the sync chip.
+  const pathname = usePathname();
+  if (!isTabRoot(pathname)) {
+    const back = (
+      <Press activeBg="bg-fill-hover" accessibilityRole="button" accessibilityLabel={i18n.t("common:actions.back")} onPress={() => router.back()} className="size-11 items-center justify-center rounded-full bg-secondary">
+        <Icon icon={ChevronLeft} size={22} tone="foreground" strokeWidth={1.75} />
+      </Press>
+    );
+    return (
+      <HeaderFrame rows={HEADER_ROW + (dateSwitcher ? 40 : 0)}>
+        <HeaderRow left={back} center={<Text accessibilityRole="header" className={cn(HEADER_TITLE, "px-2")} numberOfLines={1}>{title}</Text>} right={right} className="px-4" />
+        {dateSwitcher && (
+          <View className="items-center pt-1">
+            <DateSwitcher {...dateSwitcher} />
+          </View>
+        )}
+      </HeaderFrame>
+    );
+  }
   return (
-    <HeaderFrame rows={HEADER_ROW + (dateSwitcher ? 40 : 0)}>
-      <HeaderRow left={back} center={<Text accessibilityRole="header" className={cn(HEADER_TITLE, "px-2")} numberOfLines={1}>{title}</Text>} right={right} className="px-4" />
-      {dateSwitcher && (
-        <View className="items-center pt-1">
-          <DateSwitcher {...dateSwitcher} />
-        </View>
-      )}
+    <HeaderFrame rows={GLOW_HEADER_ROW}>
+      <View className="px-4">
+        <MomentHeader title={title} calendarPath={dateSwitcher ? "/journal" : "/"} dated={!!dateSwitcher} />
+      </View>
     </HeaderFrame>
   );
 }
+
+/** The glow header's row (src/glow/Frame.tsx MomentHeader). */
+export const GLOW_HEADER_ROW = 60;

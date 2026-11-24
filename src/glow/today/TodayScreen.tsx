@@ -1,6 +1,7 @@
 // Today (unstrap docs/design/v2/spec.md § 4): the screen follows the day. One hero whose content changes with the moment
 // (waking up, midday, workout time, during and after a workout, evening, night), then a grid one size down with Smalls in
-// pairs. It reads the existing view models; nothing about scoring changes.
+// pairs; then everything Pulse's Home has (PulseHomeSections: live heart rate, Monitor, Stress, My Day, My Dashboard).
+// It reads the existing view models; nothing about scoring changes.
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { View } from "react-native";
@@ -12,7 +13,7 @@ import { getActivities } from "@/queries/activities";
 import { getChartDay } from "@/queries/chart";
 import type { QueryCtx } from "@/queries/ctx";
 import { getGoalsDay, type Goals } from "@/queries/goals";
-import { getHome } from "@/queries/home";
+import { homeQuery, PulseHomeSections } from "@/screens/home/HomeScreen";
 import { getRecovery } from "@/queries/recovery";
 import { getSleep } from "@/queries/sleep";
 import { useScreen } from "@/screens/useScreen";
@@ -47,7 +48,7 @@ import { grouped } from "../model";
 
 const todayQuery = (d: string, goals: Goals) => async (ctx: QueryCtx) => {
   const [home, recovery, sleep, hr, stress, goalDay, activities] = await Promise.all([
-    getHome(d, ctx),
+    homeQuery(d)(ctx),
     getRecovery(d, ctx),
     getSleep(d, ctx),
     getChartDay("hr", d, ctx).catch(() => null),
@@ -99,6 +100,7 @@ export function TodayScreen() {
   return (
     <TabPage title={title} calendarPath="/" mood={MOMENT_LOOK[moment].mood}>
       {vm ? <TodayCards vm={vm} moment={moment} now={now} /> : <View style={{ height: 300 }} />}
+      {vm && timeZone ? <PulseHomeSections vm={vm.home} timeZone={timeZone} /> : null}
     </TabPage>
   );
 }

@@ -63,7 +63,7 @@ export function buildGlowWidget({ moment, home, recovery, sleep, steps, bedtimeI
     const base = { angle: look.angle, rim: look.rim, mood: look.mood, title: t(`moment.${moment}`) };
     switch (moment) {
       case "waking":
-        return { ...base, ink: INK.recovery, sentence: recoverySentence, value: score === null ? null : String(Math.round(score)), unit: t(`word.band.${band}`), href: "pulse://tab-recovery" };
+        return { ...base, ink: INK.recovery, sentence: recoverySentence, value: score === null ? null : String(Math.round(score)), unit: t(`word.band.${band}`), href: "pulse://recovery" };
       case "midday":
         return { ...base, ink: INK.energy, sentence: e ? t(`hero.energy.${e.band}`) : t("hero.energy.waiting"), value: e ? String(Math.round(e.current)) : null, unit: t("card.energy"), href: "pulse://" };
       case "window":
@@ -71,7 +71,7 @@ export function buildGlowWidget({ moment, home, recovery, sleep, steps, bedtimeI
       case "during":
         return { ...base, ink: INK.heart, sentence: t("hero.duringLine"), value: null, unit: "", href: "pulse://workout/live" };
       case "after":
-        return { ...base, ink: INK.recovery, sentence: t("hero.afterShort"), value: null, unit: "", href: "pulse://tab-activity" };
+        return { ...base, ink: INK.recovery, sentence: t("hero.afterShort"), value: null, unit: "", href: "pulse://strain" };
       case "evening":
       case "night": {
         const parts = [
@@ -85,7 +85,7 @@ export function buildGlowWidget({ moment, home, recovery, sleep, steps, bedtimeI
           sentence: parts.join(" ") || t("hero.nightLine"),
           value: stepCount !== null ? grouped(stepCount) : null,
           unit: t("word.steps"),
-          href: "pulse://tab-sleep",
+          href: "pulse://sleep",
         };
       }
     }
@@ -102,7 +102,7 @@ export function buildGlowWidget({ moment, home, recovery, sleep, steps, bedtimeI
       sentence: recoverySentence,
       week: lastDays(recovery.trend.points, 7).map((v) => (v === null ? null : Math.round(v))),
       waiting: score === null ? reasonCopy(recovery.recovery.reason, recovery.recovery.nightsLeft).short : null,
-      href: "pulse://tab-recovery",
+      href: "pulse://recovery",
     },
     sleep: {
       title: t("card.lastNight"),
@@ -112,7 +112,7 @@ export function buildGlowWidget({ moment, home, recovery, sleep, steps, bedtimeI
       asleepShort: asleepMin === null ? null : `${Math.floor(asleepMin / 60)} h ${String(Math.round(asleepMin) % 60).padStart(2, "0")}`,
       stages: { deep: stage("deep"), rem: stage("rem"), light: stage("light"), awake: stage("awake") },
       waiting: sleepScore === null ? reasonCopy(sleep.performance.reason, sleep.performance.nightsLeft).short : null,
-      href: "pulse://tab-sleep",
+      href: "pulse://sleep",
     },
     steps: {
       title: t("card.steps"),
@@ -122,7 +122,7 @@ export function buildGlowWidget({ moment, home, recovery, sleep, steps, bedtimeI
       met: !!steps?.done,
       word: steps?.done ? t("word.goalMet") : steps ? t("card.goalShare", { value: Math.round(Math.min(1, steps.progress) * 100) }) : "",
       week: steps ? steps.history.map((h) => (h.progress === null ? null : Math.min(1, Math.max(0, h.progress)))) : [],
-      href: "pulse://tab-activity",
+      href: "pulse://strain",
     },
     energy: {
       title: t("card.energy"),

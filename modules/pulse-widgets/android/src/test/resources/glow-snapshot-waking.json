@@ -139,7 +139,7 @@
    "sentence": "Slept 7 hours 13 minutes. Recovered and ready for your usual training. Mostly lifted by heart rate variability.",
    "value": "93",
    "unit": "Ready",
-   "href": "pulse://tab-recovery"
+   "href": "pulse://recovery"
   },
   "recovery": {
    "title": "Recovery",
@@ -157,7 +157,7 @@
     93
    ],
    "waiting": null,
-   "href": "pulse://tab-recovery"
+   "href": "pulse://recovery"
   },
   "sleep": {
    "title": "Last night",
@@ -172,7 +172,7 @@
     "awake": 22
    },
    "waiting": null,
-   "href": "pulse://tab-sleep"
+   "href": "pulse://sleep"
   },
   "steps": {
    "title": "Steps",
@@ -190,7 +190,7 @@
     1,
     0.4647
    ],
-   "href": "pulse://tab-activity"
+   "href": "pulse://strain"
   },
   "energy": {
    "title": "Energy",
