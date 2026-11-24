@@ -24,7 +24,8 @@
       "ago": "{{time}} ago",
       "open": "Data source and sync"
     },
-    "openSettings": "Open settings"
+    "openSettings": "Open settings",
+    "openCoach": "Open the coach"
   },
   "moment": {
     "waking": "Waking up",

@@ -3,7 +3,7 @@
 // drawn once per size, delta and theme, and only the views around them move (transform and opacity, Reanimated styles
 // on the UI thread), so a frame costs a few composited layers and no geometry. See docs/learning.md ("The Pulse Age orb").
 import { useEffect, useMemo, useRef, useSyncExternalStore, type ReactNode } from "react";
-import { AppState, StyleSheet, View, type GestureResponderEvent, type ViewStyle } from "react-native";
+import { AppState, StyleSheet, Text as RNText, View, type GestureResponderEvent, type ViewStyle } from "react-native";
 import Svg, { Circle, ClipPath, Defs, G, LinearGradient, Mask, Path, RadialGradient, Rect, Stop } from "react-native-svg";
 import { useIsFocused } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -15,13 +15,11 @@ import { parseColor } from "@/ui/color";
 import { VALUES, type TokenName } from "@/ui/palette";
 import { useNarrow } from "@/ui/shells/layout";
 import { ReasonPlaceholder } from "@/ui/metrics/ReasonPlaceholder";
-import { Text } from "@/ui/Text";
 import { useTheme } from "@/ui/theme";
 import { EASE } from "@/ui/motion";
 import { haptic } from "@/ui/haptics";
 import { ageDelta } from "./format";
-import { DotText } from "@/glow/DotText";
-import { WHITE } from "@/glow/tokens";
+import { FONT, WHITE } from "@/glow/tokens";
 import { blobRadius, mixRGB, ORB, orbColors, particleCount, particleLayer, rgba, rng, shadeRGB, swirlVelocity, type RGB, type Token } from "./orb";
 
 export type AgeOrbProps = {
@@ -533,28 +531,31 @@ export function AgeOrb({ age, deltaYears, provisional = false, size: sizeProp, r
   // The web's `motion-safe:` entry: with reduced motion the text just appears.
   const entering = (delay: number) => (compact || reduced ? undefined : enter(delay));
   // The web writes `leading-none` before `text-[calc(..)]`; tailwind-merge drops the leading, so the numeral takes the page's 1.5 line height.
-  const caption = small ? Math.max(9, size * 0.09) : 7 + size * 0.023;
-  const deltaSize = 8 + size * 0.024;
+  const numeral = small ? size * 0.25 : size * 0.17;
+  const caption = small ? Math.max(8, size * 0.075) : Math.max(11, size * 0.042);
+  const deltaSize = Math.max(12, size * 0.042);
   const deltaColor = delta !== null && delta <= ORB.greenText ? c["optimal-text"] : same ? c["orb-text-muted"] : c[ORB.deltaText as TokenName];
 
   return (
     <View accessible={!compact} accessibilityRole={compact ? undefined : "image"} accessibilityLabel={compact ? undefined : label} accessibilityElementsHidden={compact} importantForAccessibility={compact ? "no-hide-descendants" : "yes"} style={{ width: size, height: size }}>
       <OrbLayers delta={delta} size={size} compact={compact} />
       <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" className="size-full items-center justify-center" style={{ paddingHorizontal: size * 0.14 }}>
+        {/* The WHOOP Age look in Funnel: a bold numeral, a small tracked label, the change under it in its colour. */}
         <Animated.View entering={entering(200)}>
-          {/* The glow design's number: dots (src/glow/DotText), the detail size in the hero orb, the edge size small. */}
-          <DotText text={formatValue("decimal1", has ? age : null)} size={small ? "edge" : "detail"} color={has ? "#FFFFFF" : WHITE.waiting} maxWidth={size * 0.62} />
+          <RNText allowFontScaling={false} style={{ fontFamily: FONT.displaySemibold, fontSize: numeral, lineHeight: numeral * 1.12, letterSpacing: -0.02 * numeral, color: has ? "#FFFFFF" : WHITE.waiting, textAlign: "center", fontVariant: ["tabular-nums"] }}>
+            {formatValue("decimal1", has ? age : null)}
+          </RNText>
         </Animated.View>
-        <Animated.View entering={entering(300)} style={{ marginTop: small ? 2 : 6 }}>
-          <Text className="text-center font-medium" style={{ fontSize: small ? caption : 15, lineHeight: small ? caption : 20, color: WHITE.secondary }}>
+        <Animated.View entering={entering(300)} style={{ marginTop: small ? 1 : 4 }}>
+          <RNText allowFontScaling={false} style={{ fontFamily: FONT.sansSemibold, fontSize: caption, lineHeight: caption * 1.3, letterSpacing: 0.12 * caption, textTransform: "uppercase", color: WHITE.caption, textAlign: "center" }}>
             {AGE_LABEL}
-          </Text>
+          </RNText>
         </Animated.View>
         {!small && d && (
-          <Animated.View entering={entering(400)} style={{ marginTop: 10 }}>
-            <Text className="text-center font-medium tabular-nums" style={{ fontSize: Math.max(15, deltaSize), lineHeight: Math.max(15, deltaSize) * 1.3, color: deltaColor }}>
+          <Animated.View entering={entering(400)} style={{ marginTop: 6 }}>
+            <RNText allowFontScaling={false} style={{ fontFamily: FONT.sansSemibold, fontSize: deltaSize, lineHeight: deltaSize * 1.3, color: deltaColor, textAlign: "center", fontVariant: ["tabular-nums"] }}>
               {d.text}
-            </Text>
+            </RNText>
           </Animated.View>
         )}
         {!small && !has && (

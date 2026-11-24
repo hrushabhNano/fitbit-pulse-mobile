@@ -10,11 +10,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { Tabs } from "expo-router";
 import { HeartPulse, Menu, NotebookPen, User, type LucideIcon } from "lucide-react-native";
 import Svg, { Circle } from "react-native-svg";
-import { useGlobalSearchParams } from "expo-router";
-import { i18n } from "@/i18n/config";
-import { useHasCoachKey } from "@/coach/session";
-import { dayLabel } from "@/lib/format";
-import { parseDay } from "@/lib/url";
 import { HomeChart } from "@/ui/icons";
 import { markDots, markHeight } from "./mark";
 import { CalendarPanel } from "@/ui/shells/CalendarPanel";
@@ -305,23 +300,19 @@ export function GlowMark({ width, color = "#FFFFFF" }: { width: number; color?: 
 }
 
 /**
- * Pulse's round action beside the tabs: it opens the check-in for the day on screen (`/checkin?d=`), or the coach once
- * a coach key is saved, as Pulse's did. Drawn as the app's mark on the sheet surface.
+ * The round action beside the tabs: the AI coach, always (`/coach`, which asks for a key first when none is saved). The
+ * check-in stays one tap away in the + menu and on Journal.
  */
 function GlowCheckIn() {
-  const { today } = useShellCalendar();
-  const { d: raw } = useGlobalSearchParams<{ d?: string }>();
-  const { d } = parseDay(raw, today);
-  const coach = useHasCoachKey();
-  const label = coach ? "Coach" : i18n.t("ui:checkIn.forDay", { day: dayLabel(d, today) });
+  const { t } = useTranslation("glow");
   return (
     <Press
       activeScale={0.94}
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={t("header.openCoach")}
       onPress={() => {
         haptic.tap();
-        push(coach ? "/coach" : `/checkin?d=${d}`);
+        push("/coach");
       }}
       style={{
         width: LAYOUT.tabBarHeight,

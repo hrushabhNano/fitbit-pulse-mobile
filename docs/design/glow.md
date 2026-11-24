@@ -30,7 +30,7 @@ flowchart LR
   Home --> Hero["the moment's glow cards"] & P["PulseHomeSections: live heart rate, Monitor, Stress, My Day, My Dashboard"]
   Home & H & J & M -->|"cards open"| D["/recovery, /sleep, /strain, /health/*, /journal/*, /reports, /trends, /chart ..."]
   Avatar["avatar"] --> S["/settings"]
-  Bar["tab bar"] --> C["round action: /checkin or /coach"]
+  Bar["tab bar"] --> C["round action: /coach"]
 ```
 
 - Pulse's whole app stays: the four tabs (Home, Health, Journal, More), every page and every number, drawn in the glow
